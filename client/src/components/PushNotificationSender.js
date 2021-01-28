@@ -2,7 +2,6 @@ import React from 'react';
 import PageNavbar from './PageNavbar';
 import '../style/PushNotificationSender.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Expo } from 'expo-server-sdk';
 export default class PushNotificationSender extends React.Component {
 	constructor(props) {
 		super(props);
