@@ -167,7 +167,7 @@ export default class AddShifts extends React.Component {
 
                         <button 
                             className="submit-btn" 
-                            id="decadesSubmitBtn" 
+                            id="shiftSubmitBtn" 
                             onClick={this.addShift}
                         >
                             Add Shift

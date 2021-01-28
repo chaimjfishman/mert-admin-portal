@@ -2,7 +2,7 @@ import React from 'react';
 import PageNavbar from './PageNavbar';
 import '../style/PushNotificationSender.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { Expo } from 'expo-server-sdk';
 export default class PushNotificationSender extends React.Component {
 	constructor(props) {
 		super(props);
@@ -47,9 +47,14 @@ export default class PushNotificationSender extends React.Component {
 		return (
 			<div className="PushNotificationSender">
                 <PageNavbar active="notifications" />
-                <div>
-                    push notifications
-                </div>
+                
+                <button 
+                    className="submit-btn" 
+                    id="decadesSubmitBtn" 
+                    onClick={this.sendPushNotification}
+                >
+                    Send Notification
+                </button>
 		    </div>
 		);
 	}
