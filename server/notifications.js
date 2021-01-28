@@ -2,8 +2,8 @@ const { Expo } = require('expo-server-sdk')
 
 let expo = new Expo();
 
-async function sendNotification(token, message) {
-    var tokens = token.split(',');
+async function sendNotification(pushTokens, title, message) {
+    var tokens = pushTokens.split(',');
 
     let messages = [];
     for (let pushToken of tokens) {
@@ -17,12 +17,12 @@ async function sendNotification(token, message) {
     
         messages.push({
             to: pushToken,
-            sound: null, //'default'
+            sound: 'default',
             body: message,
+            title: title,
             data: { withSome: 'data' },
         })
     }
-
 
     console.log('sending notification')
 
