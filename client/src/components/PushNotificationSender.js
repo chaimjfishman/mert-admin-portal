@@ -5,7 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Multiselect } from 'multiselect-react-dropdown';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { makeStyles } from '@material-ui/core/styles';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -69,12 +68,10 @@ export default class PushNotificationSender extends React.Component {
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
                 else this.openErrorAlert();
-
             })
             .catch(err => {
                 this.openErrorAlert();
-                console.log(err)
-                
+                console.log(err) 
             })	// Print the error if there is one.
     }
 

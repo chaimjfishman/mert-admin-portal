@@ -3,6 +3,12 @@ import PageNavbar from './PageNavbar';
 import '../style/AddShifts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default class AddShifts extends React.Component {
 	constructor(props) {
@@ -16,7 +22,9 @@ export default class AddShifts extends React.Component {
             selectedEnd: null,
             members: [],
             shiftTypes: ['day', 'overnight', 'standby', 'athletic'],
-            types: []
+            types: [],
+            displaySucessAlert: false,
+            displayErrorAlert: false
         }
         
         this.addShift = this.addShift.bind(this);
@@ -24,6 +32,10 @@ export default class AddShifts extends React.Component {
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.handleStartChange = this.handleStartChange.bind(this);
         this.handleEndChange = this.handleEndChange.bind(this);
+        this.openSuccessAlert = this.openSuccessAlert.bind(this);     
+        this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
+        this.openErrorAlert = this.openErrorAlert.bind(this);     
+        this.closeErrorAlert = this.closeErrorAlert.bind(this);
     }
     
     componentDidMount() {
@@ -64,11 +76,14 @@ export default class AddShifts extends React.Component {
         fetch(url, { 
                 method: 'GET' // The type of HTTP request.
             })
-            .then(res => res.json()) // Convert the response data to a JSON.
-            .then(resCode => {
-                console.log(resCode)
+            .then(res => {
+                if (res.status === 200) this.openSuccessAlert();
+                else this.openErrorAlert();
             })
-            .catch(err => console.log(err))	// Print the error if there is one.
+            .catch(err => {
+                this.openErrorAlert();
+                console.log(err)
+            })	// Print the error if there is one.
     }
 
     handleMemberChange(e) {
@@ -93,7 +108,38 @@ export default class AddShifts extends React.Component {
 		this.setState({
 			selectedEnd: e.target.value
         }, () => console.log(`end changed to ${this.state.selectedEnd}`));
-	}
+    }
+    
+
+    openSuccessAlert(event, reason) {
+        this.setState({
+            displaySuccessAlert: true
+        })
+    };
+    
+    closeSuccessAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displaySuccessAlert: false
+        })
+    };
+
+    openErrorAlert(event, reason) {
+        this.setState({
+            displayErrorAlert: true
+        })
+    };
+    
+    closeErrorAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displayErrorAlert: false
+        })
+    };
 	
 	render() {
 
@@ -174,6 +220,17 @@ export default class AddShifts extends React.Component {
                         </button>
                     </div>  
                 </div>
+                <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
+                    <Alert onClose={this.closeSuccessAlert} severity="success">
+                        Notification Successfully Sent!
+                    </Alert>
+                </Snackbar>
+
+                <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
+                    <Alert onClose={this.closeErrorAlert} severity="error">
+                        Error: There was a problem sending the notification.
+                    </Alert>
+                </Snackbar>
 		    </div>
 		);
 	}
