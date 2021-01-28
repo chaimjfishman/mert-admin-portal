@@ -1,5 +1,5 @@
-var firebase = require('./firebaseConfig');
 var db = require('./db.js');
+var notif = require('./notifications.js');
 
 /* -------------------------------------------------- */
 /* ------------------- Route Handlers --------------- */
@@ -30,8 +30,14 @@ async function addShift(req, res) {
   res.sendStatus(200)
 };
 
+async function sendNotifications(req, res) {
+    await notif.sendNotification();
+    res.sendStatus(200)
+}  
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   getMembers: getMembers,
   addShift: addShift,
+  sendNotifications: sendNotifications
 }

@@ -18,6 +18,8 @@ app.get('/members', routes.getMembers);
 
 app.get('/addshift/:userid/:start/:end/:type', routes.addShift);
 
+app.get('/notifications', routes.sendNotifications);
+
 
 app.listen(8081, () => {
 	console.log(`Server listening on PORT 8081`);
