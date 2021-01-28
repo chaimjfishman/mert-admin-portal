@@ -5,6 +5,7 @@ import {
 	Switch
 } from 'react-router-dom';
 import AddShifts from './AddShifts';
+import PushNotificationSender from './PushNotificationSender';
 
 export default class App extends React.Component {
 
@@ -24,6 +25,12 @@ export default class App extends React.Component {
 							path="/shifts"
 							render={() => (
 								<AddShifts />
+							)}
+						/>
+						<Route
+							path="/notifications"
+							render={() => (
+								<PushNotificationSender />
 							)}
 						/>
 					</Switch>
