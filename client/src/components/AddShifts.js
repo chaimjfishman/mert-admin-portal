@@ -24,7 +24,9 @@ export default class AddShifts extends React.Component {
             shiftTypes: ['day', 'overnight', 'standby', 'athletic'],
             types: [],
             displaySucessAlert: false,
-            displayErrorAlert: false
+            displayErrorAlert: false,
+            displayWarningAlert: false,
+            warningMsg: ""
         }
         
         this.addShift = this.addShift.bind(this);
@@ -36,6 +38,9 @@ export default class AddShifts extends React.Component {
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
         this.openErrorAlert = this.openErrorAlert.bind(this);     
         this.closeErrorAlert = this.closeErrorAlert.bind(this);
+        this.openWarningAlert = this.openWarningAlert.bind(this);     
+        this.closeWarningAlert = this.closeWarningAlert.bind(this);
+        
     }
     
     componentDidMount() {
@@ -53,7 +58,12 @@ export default class AddShifts extends React.Component {
         })
           .then(res => res.json()) // Convert the response data to a JSON.
           .then(memberList => {
-            if (!memberList) return;
+            if (!memberList) {
+                this.setState({
+                    warningMsg: 'Error retrieving member list from server!'
+                }, () => this.openWarningAlert())
+                return;
+            }
 
             // Map each memberObj in memberList to an HTML element:
             // A button which triggers the showMovies function for each genre.
@@ -65,10 +75,33 @@ export default class AddShifts extends React.Component {
                 members: memberDivs
             })
           })
-          .catch(err => console.log(err))	// Print the error if there is one.
-    }
+          .catch(err => {
+                this.setState({
+                    warningMsg: 'Error retrieving member list from server!'
+                }, () => this.openWarningAlert())
+                console.log(err)
+            })    }
 
     addShift() {
+        if (this.state.selectedMember === '') {
+            this.setState({
+                warningMsg: 'You must select a member to assign the shift!'
+            }, () => this.openWarningAlert())
+            return;
+        }
+        if (this.state.selectedType === '') {
+            this.setState({
+                warningMsg: 'You must select a type for this shift!'
+            }, () => this.openWarningAlert())
+            return;
+        }
+        if (!this.state.selectedStart || !this.state.selectedEnd) {
+            this.setState({
+                warningMsg: 'You must select both a start and end time for the shift!'
+            }, () => this.openWarningAlert())
+            return;
+        }
+
         // Send an HTTP request to the server.
         // let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
         let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
@@ -87,12 +120,18 @@ export default class AddShifts extends React.Component {
     }
 
     handleMemberChange(e) {
+        if (e.target.value === 'true') {
+            e.target.value = ''
+        }
 		this.setState({
 			selectedMember: e.target.value
         }, () => console.log(`member changed to ${this.state.selectedMember}`));   
     }
 
     handleTypeChange(e) {
+        if (e.target.value === 'true') {
+            e.target.value = ''
+        }
 		this.setState({
 			selectedType: e.target.value
         }, () => console.log(`type changed to ${this.state.selectedType}`));
@@ -138,6 +177,21 @@ export default class AddShifts extends React.Component {
         }
         this.setState({
             displayErrorAlert: false
+        })
+    };
+
+    openWarningAlert(event, reason) {
+        this.setState({
+            displayWarningAlert: true
+        })
+    };
+    
+    closeWarningAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displayWarningAlert: false
         })
     };
 	
@@ -222,13 +276,18 @@ export default class AddShifts extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        Notification Successfully Sent!
+                        Shift Successfully Added!
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem sending the notification.
+                        Error: There was a problem adding the shift.
+                    </Alert>
+                </Snackbar>
+                <Snackbar open={this.state.displayWarningAlert} autoHideDuration={6000} onClose={this.closeWarningAlert}>
+                    <Alert onClose={this.closeWarningAlert} severity="warning">
+                        {this.state.warningMsg}
                     </Alert>
                 </Snackbar>
 		    </div>
