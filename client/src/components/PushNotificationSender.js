@@ -3,8 +3,13 @@ import PageNavbar from './PageNavbar';
 import '../style/PushNotificationSender.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Multiselect } from 'multiselect-react-dropdown';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
 
-
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default class PushNotificationSender extends React.Component {
 	constructor(props) {
@@ -15,7 +20,9 @@ export default class PushNotificationSender extends React.Component {
             allSelected: false,
             options: [],
             title: "",
-            message: ""
+            message: "",
+            displaySucessAlert: false,
+            displayErrorAlert: false
         }
 
         this.onSelect = this.onSelect.bind(this);
@@ -25,7 +32,11 @@ export default class PushNotificationSender extends React.Component {
         this.selectAllChange = this.selectAllChange.bind(this);     
         this.handleTitleChange = this.handleTitleChange.bind(this);     
         this.handleMessageChange = this.handleMessageChange.bind(this);     
-          
+        this.openSuccessAlert = this.openSuccessAlert.bind(this);     
+        this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
+        this.openErrorAlert = this.openErrorAlert.bind(this);     
+        this.closeErrorAlert = this.closeErrorAlert.bind(this);
+        
         this.multiselectRef = React.createRef();
     }
     
@@ -55,11 +66,16 @@ export default class PushNotificationSender extends React.Component {
         fetch(url, {
                 method: 'GET' // The type of HTTP request.
             })
-            .then(res => res.json()) // Convert the response data to a JSON.
-            .then(resCode => {
-                console.log(resCode)
+            .then(res => {
+                if (res.status === 200) this.openSuccessAlert();
+                else this.openErrorAlert();
+
             })
-            .catch(err => console.log(err))	// Print the error if there is one.
+            .catch(err => {
+                this.openErrorAlert();
+                console.log(err)
+                
+            })	// Print the error if there is one.
     }
 
     handleTitleChange(e) {
@@ -87,6 +103,36 @@ export default class PushNotificationSender extends React.Component {
             allSelected: !this.state.allSelected
         })
     }
+
+    openSuccessAlert(event, reason) {
+        this.setState({
+            displaySuccessAlert: true
+        })
+    };
+    
+    closeSuccessAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displaySuccessAlert: false
+        })
+    };
+
+    openErrorAlert(event, reason) {
+        this.setState({
+            displayErrorAlert: true
+        })
+    };
+    
+    closeErrorAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displayErrorAlert: false
+        })
+    };
 	
 	render() {
 		return (
@@ -166,6 +212,17 @@ export default class PushNotificationSender extends React.Component {
 
                     </div>
                 </div>
+                <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
+                    <Alert onClose={this.closeSuccessAlert} severity="success">
+                        Notification Successfully Sent!
+                    </Alert>
+                </Snackbar>
+
+                <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
+                    <Alert onClose={this.closeErrorAlert} severity="error">
+                        Error: There was a problem sending the notification.
+                    </Alert>
+                </Snackbar>
 		    </div>
 		);
 	}
