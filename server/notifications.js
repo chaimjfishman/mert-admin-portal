@@ -2,17 +2,29 @@ const { Expo } = require('expo-server-sdk')
 
 let expo = new Expo();
 
-async function sendNotification() {
-    console.log('sending notification')
+async function sendNotification(token, message) {
+    var tokens = token.split(',');
+
     let messages = [];
-    let m1 = {
-        to: 'ExponentPushToken[0Bnu9mLhNd4t-QVeTfNMPE]',
-        sound: 'default',
-        body: 'This is a test notification',
-        data: { withSome: 'data' },
+    for (let pushToken of tokens) {
+    // Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+    
+        // Check that all your push tokens appear to be valid Expo push tokens
+        if (!Expo.isExpoPushToken(pushToken)) {
+            console.error(`Push token ${pushToken} is not a valid Expo push token`);
+            continue;
+        }
+    
+        messages.push({
+            to: pushToken,
+            sound: null, //'default'
+            body: message,
+            data: { withSome: 'data' },
+        })
     }
 
-    messages.push(m1);
+
+    console.log('sending notification')
 
     let chunks = expo.chunkPushNotifications(messages);
     let tickets = [];

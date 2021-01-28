@@ -31,7 +31,10 @@ async function addShift(req, res) {
 };
 
 async function sendNotifications(req, res) {
-    await notif.sendNotification();
+    console.log('sendNotifications called')
+    var token = req.params.token;
+    var message = req.params.message;
+    await notif.sendNotification(token, message);
     res.sendStatus(200)
 }  
 
