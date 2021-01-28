@@ -56,6 +56,44 @@ export default class AddShifts extends React.Component {
           .catch(err => console.log(err))	// Print the error if there is one.
     }
 
+    addShift() {
+        // Send an HTTP request to the server.
+        // let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
+        let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
+        console.log(`urs is ${url}`)
+        fetch(url, { 
+                method: 'GET' // The type of HTTP request.
+            })
+            .then(res => res.json()) // Convert the response data to a JSON.
+            .then(resCode => {
+                console.log(resCode)
+            })
+            .catch(err => console.log(err))	// Print the error if there is one.
+    }
+
+    handleMemberChange(e) {
+		this.setState({
+			selectedMember: e.target.value
+        }, () => console.log(`member changed to ${this.state.selectedMember}`));   
+    }
+
+    handleTypeChange(e) {
+		this.setState({
+			selectedType: e.target.value
+        }, () => console.log(`type changed to ${this.state.selectedType}`));
+    }
+    
+    handleStartChange(e) {
+		this.setState({
+			selectedStart: e.target.value
+        }, () => console.log(`start changed to ${this.state.selectedStart}`));
+    }
+    
+    handleEndChange(e) {
+		this.setState({
+			selectedEnd: e.target.value
+        }, () => console.log(`end changed to ${this.state.selectedEnd}`));
+	}
 	
 	render() {
 
