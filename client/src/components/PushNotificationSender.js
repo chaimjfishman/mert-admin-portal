@@ -21,7 +21,9 @@ export default class PushNotificationSender extends React.Component {
             title: "",
             message: "",
             displaySucessAlert: false,
-            displayErrorAlert: false
+            displayErrorAlert: false,
+            displayWarningAlert: false,
+            warningMsg: ""
         }
 
         this.onSelect = this.onSelect.bind(this);
@@ -35,6 +37,8 @@ export default class PushNotificationSender extends React.Component {
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
         this.openErrorAlert = this.openErrorAlert.bind(this);     
         this.closeErrorAlert = this.closeErrorAlert.bind(this);
+        this.openWarningAlert = this.openWarningAlert.bind(this);     
+        this.closeWarningAlert = this.closeWarningAlert.bind(this);
         
         this.multiselectRef = React.createRef();
     }
@@ -46,19 +50,43 @@ export default class PushNotificationSender extends React.Component {
         })
           .then(res => res.json()) // Convert the response data to a JSON.
           .then(memberList => {
-            if (!memberList) return;
+            if (!memberList) {
+                this.setState({
+                    warningMsg: 'Error retrieving member list from server!'
+                }, () => this.openWarningAlert())
+                return;
+            }
     
             this.setState({
                 options: memberList
             })
           })
-          .catch(err => console.log(err))	// Print the error if there is one.
+          .catch(err => {
+                this.setState({
+                    warningMsg: 'Error retrieving member list from server!'
+                }, () => this.openWarningAlert())
+                console.log(err)
+            })	// Print the error if there is one.
     }
 
     sendPushNotification() {
+        if (this.state.title === '' || this.state.message === '') {
+            this.setState({
+                warningMsg: 'You must include both a title and message in the notification!'
+            }, () => this.openWarningAlert())
+            return;
+        }
+
         let allRecipients = this.state.allSelected ? this.state.options : this.multiselectRef.current.getSelectedItems()
         let pushTokens=''
         allRecipients.forEach(recipient => pushTokens+=recipient.pushToken+',')
+
+        if (pushTokens === '') {
+            this.setState({
+                warningMsg: 'You must select at least one member to recieve the notification!'
+            }, () => this.openWarningAlert())
+            return;
+        }
 
         let url = `http://localhost:8081/notifications/${pushTokens}/${this.state.title}/${this.state.message}`
         // Send an HTTP request to the server.
@@ -128,6 +156,21 @@ export default class PushNotificationSender extends React.Component {
         }
         this.setState({
             displayErrorAlert: false
+        })
+    };
+
+    openWarningAlert(event, reason) {
+        this.setState({
+            displayWarningAlert: true
+        })
+    };
+    
+    closeWarningAlert(event, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            displayWarningAlert: false
         })
     };
 	
@@ -218,6 +261,12 @@ export default class PushNotificationSender extends React.Component {
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
                         Error: There was a problem sending the notification.
+                    </Alert>
+                </Snackbar>
+
+                <Snackbar open={this.state.displayWarningAlert} autoHideDuration={6000} onClose={this.closeWarningAlert}>
+                    <Alert onClose={this.closeWarningAlert} severity="warning">
+                        {this.state.warningMsg}
                     </Alert>
                 </Snackbar>
 		    </div>
