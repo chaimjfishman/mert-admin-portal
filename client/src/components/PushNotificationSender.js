@@ -12,14 +12,17 @@ export default class PushNotificationSender extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            allSelected: false,
             members: [],
-            options: [{name: 'd', id: 1},{name: 'a', id: 1},{name: 'b', id: 1},{name: 'c', id: 1},{name: 'Srigar', id: 1},{name: 'Sam', id: 2}]
+            options: [{name: 'dfs', id: 1},{name: 'drw', id: 1},{name: 'd', id: 1},{name: 'a', id: 1},{name: 'b', id: 1},{name: 'c', id: 1},{name: 'Srigar', id: 1},{name: 'Sam', id: 2}]
         }
 
         this.onSelect = this.onSelect.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.resetSelcted = this.resetSelcted.bind(this);
-        this.sendPushNotification = this.sendPushNotification.bind(this);        
+        this.sendPushNotification = this.sendPushNotification.bind(this);      
+        this.selectAllChange = this.selectAllChange.bind(this);      
+          
 
         this.multiselectRef = React.createRef();
     }
@@ -47,7 +50,10 @@ export default class PushNotificationSender extends React.Component {
     }
 
     sendPushNotification() {
+        console.log(`allSelected: ${this.state.allSelected}`)
         console.log(this.multiselectRef.current.getSelectedItems())
+        console.log('options')
+        console.log(this.state.options)
     }
 
     onSelect(selectedList, selectedItem) {
@@ -61,6 +67,13 @@ export default class PushNotificationSender extends React.Component {
     resetSelcted() {
         this.multiselectRef.current.resetSelectedValues()
     }
+
+    selectAllChange() {
+        console.log('changed')
+        this.setState({
+            allSelected: !this.state.allSelected
+        })
+    }
 	
 	render() {
 		return (
@@ -73,13 +86,17 @@ export default class PushNotificationSender extends React.Component {
                 }}>
                     <div className="jumbotron" >
 
-                        <button 
-                            className="submit-btn" 
-                            id="decadesSubmitBtn" 
-                            onClick={this.sendPushNotification}
-                        >
-                            Send Notification
-                        </button>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                type="checkbox" value="" 
+                                id="defaultCheck1"
+                                onClick={this.selectAllChange}
+                            />
+                            
+                            <label class="form-check-label">
+                                Notify Everyone!
+                            </label>
+                        </div>
 
                         <Multiselect
                             options={this.state.options} // Options to display in the dropdown
@@ -87,8 +104,30 @@ export default class PushNotificationSender extends React.Component {
                             onRemove={this.onRemove} // Function will trigger on remove event
                             displayValue="name" // Property name to display in the dropdown options
                             ref={this.multiselectRef}
+                            closeOnSelect={false}
+                            disable={this.state.allSelected}
+                            showCheckbox={true}
                         />
+
+                        <button 
+                            className="submit-btn" 
+                            id="resetBtin" 
+                            onClick={this.resetSelcted}
+                        >
+                            Reset Selection
+                        </button>
+
+                        <div>
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                        </div>
                         
+                        <button 
+                            className="submit-btn" 
+                            id="decadesSubmitBtn" 
+                            onClick={this.sendPushNotification}
+                        >
+                            Send Notification
+                        </button>
 
                     </div>
                 </div>
