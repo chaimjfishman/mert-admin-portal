@@ -99,7 +99,81 @@ export default class AddShifts extends React.Component {
 
 		return (
 			<div className="Shifts">
+				<PageNavbar active="shifts" />
 
+                    <div className="container addshifts-container" style={{
+        position: 'absolute', left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)'
+    }}>
+                        <div className="jumbotron" >
+
+                        <select value={this.state.selectedDecade} onChange={this.handleMemberChange} className="dropdown" id="decadesDropdown">
+                            <option select value> -- select member -- </option>
+                            {this.state.members}
+                        </select>
+
+                        <div>
+                            <br/>
+                            <br/>
+                        </div>
+
+                        <select value={this.state.selectedDecade} onChange={this.handleTypeChange} className="dropdown" id="decadesDropdown">
+                            <option select value> -- select shift type -- </option>
+                            {this.state.types}
+                        </select>
+
+                        <div>
+                            <br/>
+                            <br/>
+                        </div>
+
+                        <form >
+                            <TextField
+                                id="datetime-local"
+                                label="Shift Start"
+                                type="datetime-local"
+                                onChange={this.handleStartChange}
+                                // defaultValue="2017-05-24T10:30"
+                                // className={classes.textField}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </form>
+
+                        <div>
+                            <br/>
+                            <br/>
+                        </div>
+
+                        <form >
+                            <TextField
+                                id="datetime-local"
+                                label="Shift End"
+                                type="datetime-local"
+                                onChange={this.handleEndChange}
+                                // defaultValue="2017-05-24T10:30"
+                                // className={classes.textField}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </form>
+
+                        <div>
+                            <br/>
+                            <br/>
+                        </div>
+
+                        <button 
+                            className="submit-btn" 
+                            id="decadesSubmitBtn" 
+                            onClick={this.addShift}
+                        >
+                            Add Shift
+                        </button>
+                    </div>  
+                </div>
 		    </div>
 		);
 	}
