@@ -66,7 +66,6 @@ export default class AddShifts extends React.Component {
             }
 
             // Map each memberObj in memberList to an HTML element:
-            // A button which triggers the showMovies function for each genre.
             let memberDivs = memberList.map((memberObj, i) =>
                 <option value={memberObj.id}> {memberObj.email} </option>
             );
@@ -80,7 +79,8 @@ export default class AddShifts extends React.Component {
                     warningMsg: 'Error retrieving member list from server!'
                 }, () => this.openWarningAlert())
                 console.log(err)
-            })    }
+            })    
+    }
 
     addShift() {
         if (this.state.selectedMember === '') {

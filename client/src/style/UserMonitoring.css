@@ -1,0 +1,18 @@
+.rowC{
+    display:flex; 
+    width:80%
+}
+
+
+.rowEl1{
+    width: 23%; 
+    float:left; 
+    margin: 10%;
+}
+
+.rowEl2{
+    width: 23%; 
+    float:left; 
+    margin: 10%;
+}
+
