@@ -16,6 +16,8 @@ export default class UserMonitoring extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            allUsers: null,
+            selectedMember: null,
             members: [],
             newEmail: "",
             displaySucessAlert: false,
@@ -24,6 +26,7 @@ export default class UserMonitoring extends React.Component {
             warningMsg: ""
         }
    
+        this.handleMemberChange = this.handleMemberChange.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.addEmail = this.addEmail.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
@@ -54,8 +57,14 @@ export default class UserMonitoring extends React.Component {
             let memberDivs = memberList.map((memberObj, i) =>
                 <option value={memberObj.id}> {memberObj.email} </option>
             );
+
+            let users = {}
+            memberList.forEach(user => {
+                users[user.id] = user;
+            });
     
             this.setState({
+                allUsers: users,
                 members: memberDivs
             })
           })
@@ -65,6 +74,15 @@ export default class UserMonitoring extends React.Component {
                 }, () => this.openWarningAlert())
                 console.log(err)
             })   
+    }
+
+    handleMemberChange(e) {
+        if (e.target.value === 'true') {
+            return;
+        }
+		this.setState({
+			selectedMember: this.state.allUsers[e.target.value]
+        }, () => console.log(this.state.selectedMember));   
     }
 
     handleEmailChange(e) {
@@ -143,7 +161,7 @@ export default class UserMonitoring extends React.Component {
                 
                     <div className='rowC'>
                         <div className='rowEl1'>
-                            <select value={this.state.selectedDecade} onChange={this.handleMemberChange} className="dropdown" id="decadesDropdown">
+                            <select value={this.state.selectedMember} onChange={this.handleMemberChange} className="dropdown" id="membersDropdown">
                                 <option select value> -- select member -- </option>
                                 {this.state.members}
                             </select>
@@ -152,15 +170,27 @@ export default class UserMonitoring extends React.Component {
                         <div className='rowEl'>
                             <Card style={{ width: '25rem' }}>
                                 <Card.Body>
-                                    <Card.Title>Card Title</Card.Title>
-                                    <Card.Subtitle className="mb-2 text-muted">Card Subtitle</Card.Subtitle>
+                                    <Card.Title>{this.state.selectedMember ? this.state.selectedMember.fullName : 'Name'}</Card.Title>
+                                    <Card.Subtitle className="mb-2 text-muted">{this.state.selectedMember ? this.state.selectedMember.email: 'Email'}</Card.Subtitle>
                                     <Card.Text>
-                                    Some quick example <br/>
-                                    text to build on the card title and make up the bulk of
-                                    the card's content.
+                                        Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''} <br/>
+                                        Rank: {this.state.selectedMember ? this.state.selectedMember.rank : ''} <br/>
+                                        Completed Form: {this.state.selectedMember ? (this.state.selectedMember.formCompleted ? "Yes" : "No") : ''} <br/>
+                                        Athletic Shift Completed: {this.state.selectedMember ? (this.state.selectedMember.takenAthleticShift ? "Yes" : "No") : ''} <br/>
+                                        Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''}
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
+                        </div>
+
+                        <div className='rowEl3'>
+                            <button 
+                                className="submit-btn" 
+                                id="deleteUserBtn" 
+                                onClick={console.log('deleted')}
+                            >
+                                Remove User
+                            </button>
                         </div>
                     </div>
 
