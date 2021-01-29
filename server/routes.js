@@ -40,9 +40,18 @@ async function sendNotifications(req, res) {
     res.sendStatus(200)
 }  
 
+async function addWhitelistEmail(req, res) {
+  console.log('addWhitelistEmail called')
+  var email = req.params.email;
+
+  await db.addEmail(email);
+  res.sendStatus(200)
+}  
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
   getMembers: getMembers,
   addShift: addShift,
-  sendNotifications: sendNotifications
+  sendNotifications: sendNotifications,
+  addWhitelistEmail: addWhitelistEmail
 }

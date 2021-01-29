@@ -3,6 +3,7 @@ var firebase = require('./firebaseConfig');
 const firestore = firebase.firestore();
 const usersRef = firestore.collection('users');
 const shiftsRef = firestore.collection('shifts');
+const whitelistRef = firestore.collection('userWhitelist');
 
 async function getAllMembers() {
     const snapshot = await usersRef.get();
@@ -15,7 +16,15 @@ async function addShiftDocument(dataObj) {
     await shiftsRef.add(dataObj);
 }
 
+async function addEmail(email) {
+    //TODO: Error handling
+    await whitelistRef.doc(email).set({});
+}
+
+
 module.exports = {
     getAllMembers: getAllMembers,
-    addShiftDocument: addShiftDocument
+    addShiftDocument: addShiftDocument,
+    addEmail: addEmail
+    
 }
