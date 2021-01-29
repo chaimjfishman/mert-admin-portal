@@ -99,7 +99,20 @@ export default class UserMonitoring extends React.Component {
             }, () => this.openWarningAlert())
             return;
         }
-        console.log(`added ${this.state.newEmail}`)
+        
+        let url = `http://localhost:8081/whitelist/${this.state.newEmail}`;
+        // Send an HTTP request to the server.
+        fetch(url, {
+                method: 'GET' // The type of HTTP request.
+            })
+            .then(res => {
+                if (res.status === 200) this.openSuccessAlert();
+                else this.openErrorAlert();
+            })
+            .catch(err => {
+                this.openErrorAlert();
+                console.log(err) 
+            })
     }
 
     openSuccessAlert(event, reason) {
@@ -208,13 +221,13 @@ export default class UserMonitoring extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        Notification Successfully Sent!
+                        User Email Successfully Added!
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem sending the notification.
+                        Error: There was a problem add the user email.
                     </Alert>
                 </Snackbar>
 
