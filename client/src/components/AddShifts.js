@@ -207,7 +207,7 @@ export default class AddShifts extends React.Component {
     }}>
                         <div className="jumbotron" >
 
-                        <select value={this.state.selectedDecade} onChange={this.handleMemberChange} className="dropdown" id="decadesDropdown">
+                        <select value={this.state.selectedMember} onChange={this.handleMemberChange} className="dropdown" id="membersDropdown">
                             <option select value> -- select member -- </option>
                             {this.state.members}
                         </select>
@@ -217,7 +217,7 @@ export default class AddShifts extends React.Component {
                             <br/>
                         </div>
 
-                        <select value={this.state.selectedDecade} onChange={this.handleTypeChange} className="dropdown" id="decadesDropdown">
+                        <select value={this.state.selectedType} onChange={this.handleTypeChange} className="dropdown" id="typesDropdown">
                             <option select value> -- select shift type -- </option>
                             {this.state.types}
                         </select>
