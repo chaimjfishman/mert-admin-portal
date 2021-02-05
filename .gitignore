@@ -10,8 +10,5 @@ lerna-debug.log*
 node_modules/
 jspm_packages/
 
-#firebase credentials
-server/firebaseConfig.js
 
-
-client/.DS_Store
+.DS_Store
