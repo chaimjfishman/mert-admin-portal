@@ -16,6 +16,7 @@ export default class AddShifts extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            allUsers: null,
             selectedMember: "",
             selectedType: "",
             selectedStart: null,
@@ -69,8 +70,14 @@ export default class AddShifts extends React.Component {
             let memberDivs = memberList.map((memberObj, i) =>
                 <option value={memberObj.id}> {memberObj.email} </option>
             );
+
+            let users = {}
+            memberList.forEach(user => {
+                users[user.id] = user;
+            });
     
             this.setState({
+                allUsers: users,
                 members: memberDivs
             })
           })
@@ -104,7 +111,8 @@ export default class AddShifts extends React.Component {
 
         // Send an HTTP request to the server.
         // let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
-        let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
+        let userPushToken = this.state.allUsers[this.state.selectedMember].pushToken;
+        let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}/${userPushToken}`
         console.log(`urs is ${url}`)
         fetch(url, { 
                 method: 'GET' // The type of HTTP request.
