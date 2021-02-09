@@ -16,6 +16,7 @@ export default class UserMonitoring extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            serverUrl: "https://mert-app-server.herokuapp.com/",
             allUsers: null,
             selectedMember: null,
             members: [],
@@ -41,7 +42,7 @@ export default class UserMonitoring extends React.Component {
     
     componentDidMount() {
         // Send an HTTP request to the server.
-        fetch("http://localhost:8081/members", {
+        fetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -100,7 +101,7 @@ export default class UserMonitoring extends React.Component {
             return;
         }
         
-        let url = `http://localhost:8081/whitelist/${this.state.newEmail}`;
+        let url = `${this.state.serverUrl}whitelist/${this.state.newEmail}`;
         // Send an HTTP request to the server.
         fetch(url, {
                 method: 'GET' // The type of HTTP request.

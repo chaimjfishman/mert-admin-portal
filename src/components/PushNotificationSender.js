@@ -16,6 +16,7 @@ export default class PushNotificationSender extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            serverUrl: "https://mert-app-server.herokuapp.com/",
             allSelected: false,
             options: [],
             title: "",
@@ -45,7 +46,7 @@ export default class PushNotificationSender extends React.Component {
     
     componentDidMount() {
         // Send an HTTP request to the server.
-        fetch("http://localhost:8081/members", {
+        fetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -88,7 +89,7 @@ export default class PushNotificationSender extends React.Component {
             return;
         }
 
-        let url = `http://localhost:8081/notifications/${pushTokens}/${this.state.title}/${this.state.message}`
+        let url = `${this.state.serverUrl}notifications/${pushTokens}/${this.state.title}/${this.state.message}`
         // Send an HTTP request to the server.
         fetch(url, {
                 method: 'GET' // The type of HTTP request.

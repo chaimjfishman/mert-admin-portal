@@ -16,6 +16,7 @@ export default class AddShifts extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
+            serverUrl: "https://mert-app-server.herokuapp.com/",
             allUsers: null,
             selectedMember: "",
             selectedType: "",
@@ -54,7 +55,7 @@ export default class AddShifts extends React.Component {
         })
 
         // Send an HTTP request to the server.
-        fetch("http://localhost:8081/members", {
+        fetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -110,9 +111,8 @@ export default class AddShifts extends React.Component {
         }
 
         // Send an HTTP request to the server.
-        // let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}`
         let userPushToken = this.state.allUsers[this.state.selectedMember].pushToken;
-        let url = `http://localhost:8081/addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}/${userPushToken}`
+        let url = `${this.state.serverUrl}addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}/${userPushToken}`
         console.log(`urs is ${url}`)
         fetch(url, { 
                 method: 'GET' // The type of HTTP request.
