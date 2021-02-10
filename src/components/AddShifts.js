@@ -19,6 +19,7 @@ export default class AddShifts extends React.Component {
             serverUrl: "http://localhost:8081/",
             allUsers: null,
             selectedMember: "",
+            selectedFile: null,
             selectedType: "",
             selectedStart: null,
             selectedEnd: null,
@@ -32,6 +33,7 @@ export default class AddShifts extends React.Component {
         }
         
         this.addShift = this.addShift.bind(this);
+        this.handleFileChange = this.handleFileChange.bind(this);
         this.handleMemberChange = this.handleMemberChange.bind(this);
         this.handleTypeChange = this.handleTypeChange.bind(this);
         this.handleStartChange = this.handleStartChange.bind(this);
@@ -125,6 +127,15 @@ export default class AddShifts extends React.Component {
                 this.openErrorAlert();
                 console.log(err)
             })	// Print the error if there is one.
+    }
+
+    async handleFileChange(e) {
+        const file = e.target.files.item(0)
+        this.setState({
+			selectedFile: file
+        }, () => console.log(`file changed to ${this.state.selectedFile}`));   
+        const text = await file.text();
+        console.log(text)
     }
 
     handleMemberChange(e) {
@@ -280,6 +291,18 @@ export default class AddShifts extends React.Component {
                         >
                             Add Shift
                         </button>
+
+                        <div>
+                            <br/>
+                            <br/>
+                        </div>
+
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleFormControlFile1">Upload Schedule File</label>
+                                <input type="file" class="form-control-file" id="exampleFormControlFile1" onChange={this.handleFileChange}/>
+                            </div>
+                        </form>
                     </div>  
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
