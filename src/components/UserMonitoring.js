@@ -16,7 +16,7 @@ export default class UserMonitoring extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: "http://localhost:8081/",
             allUsers: null,
             selectedMember: null,
             members: [],
