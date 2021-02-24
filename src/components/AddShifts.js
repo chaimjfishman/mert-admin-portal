@@ -20,7 +20,7 @@ export default class AddShifts extends React.Component {
             allUsers: null,
             selectedMember: "",
             selectedFile: null,
-            selectedType: "",
+            selectedRole: null,
             selectedStart: null,
             selectedEnd: null,
             members: [],
@@ -33,9 +33,10 @@ export default class AddShifts extends React.Component {
         }
         
         this.addShift = this.addShift.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleFileChange = this.handleFileChange.bind(this);
         this.handleMemberChange = this.handleMemberChange.bind(this);
-        this.handleTypeChange = this.handleTypeChange.bind(this);
+        this.handleRoleChange = this.handleRoleChange.bind(this);
         this.handleStartChange = this.handleStartChange.bind(this);
         this.handleEndChange = this.handleEndChange.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
@@ -48,13 +49,13 @@ export default class AddShifts extends React.Component {
     }
     
     componentDidMount() {
-        let typesDivs = this.state.shiftTypes.map((type, i) =>
-            <option value={type}> {type} </option>
-        );
+        // let typesDivs = this.state.shiftTypes.map((type, i) =>
+        //     <option value={type}> {type} </option>
+        // );
 
-        this.setState({
-            types: typesDivs
-        })
+        // this.setState({
+        //     types: typesDivs
+        // })
 
         // Send an HTTP request to the server.
         fetch(this.state.serverUrl + "members", {
@@ -99,9 +100,9 @@ export default class AddShifts extends React.Component {
             }, () => this.openWarningAlert())
             return;
         }
-        if (this.state.selectedType === '') {
+        if (this.state.selectedRole === '') {
             this.setState({
-                warningMsg: 'You must select a type for this shift!'
+                warningMsg: 'You must select a role to assign the shift!'
             }, () => this.openWarningAlert())
             return;
         }
@@ -114,7 +115,7 @@ export default class AddShifts extends React.Component {
 
         // Send an HTTP request to the server.
         let userPushToken = this.state.allUsers[this.state.selectedMember].pushToken;
-        let url = `${this.state.serverUrl}addshift/${this.state.selectedMember}/${this.state.selectedStart}/${this.state.selectedEnd}/${this.state.selectedType}/${userPushToken}`
+        let url = `${this.state.serverUrl}addshift/${this.state.selectedMember}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
         console.log(`urs is ${url}`)
         fetch(url, { 
                 method: 'GET' // The type of HTTP request.
@@ -134,8 +135,21 @@ export default class AddShifts extends React.Component {
         this.setState({
 			selectedFile: file
         }, () => console.log(`file changed to ${this.state.selectedFile}`));   
-        const text = await file.text();
-        console.log(text)
+    }
+
+    async handleFileUpload() {
+        var file = this.state.selectedFile;
+        // var text = await file.text();
+        // console.log(text);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        const options = {
+            method: 'POST',
+            body: formData,
+        }
+
+        fetch(`https://mert-import-server.herokuapp.com/import`, options);
     }
 
     handleMemberChange(e) {
@@ -147,13 +161,10 @@ export default class AddShifts extends React.Component {
         }, () => console.log(`member changed to ${this.state.selectedMember}`));   
     }
 
-    handleTypeChange(e) {
-        if (e.target.value === 'true') {
-            e.target.value = ''
-        }
+    handleRoleChange(e) {
 		this.setState({
-			selectedType: e.target.value
-        }, () => console.log(`type changed to ${this.state.selectedType}`));
+			selectedRole: e.target.value
+        }, () => console.log(`role changed to ${this.state.selectedRole}`));
     }
     
     handleStartChange(e) {
@@ -236,10 +247,9 @@ export default class AddShifts extends React.Component {
                             <br/>
                         </div>
 
-                        <select value={this.state.selectedType} onChange={this.handleTypeChange} className="dropdown" id="typesDropdown">
-                            <option select value> -- select shift type -- </option>
-                            {this.state.types}
-                        </select>
+                        <form >
+                            <input type="text" value={this.state.selectedRole} onChange={this.handleRoleChange} />
+                        </form>
 
                         <div>
                             <br/>
@@ -297,12 +307,15 @@ export default class AddShifts extends React.Component {
                             <br/>
                         </div>
 
-                        <form>
-                            <div class="form-group">
-                                <label for="exampleFormControlFile1">Upload Schedule File</label>
-                                <input type="file" class="form-control-file" id="exampleFormControlFile1" onChange={this.handleFileChange}/>
+                        <form encType="mulitpart/form-data">
+                            <div className="form-group">
+                                <label htmlFor="exampleFormControlFile1">Upload Schedule File</label>
+                                <input type="file" name="csv_file" onChange={this.handleFileChange}/>
                             </div>
                         </form>
+                        <button onClick={this.handleFileUpload}>
+                            Import
+                        </button>
                     </div>  
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
