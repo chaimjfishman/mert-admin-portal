@@ -16,7 +16,7 @@ export default class AddShifts extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "http://localhost:8081/",
+            serverUrl: "https://mert-app-server.herokuapp.com/",
             allUsers: null,
             selectedMember: "",
             selectedFile: null,
