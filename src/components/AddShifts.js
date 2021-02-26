@@ -239,7 +239,7 @@ export default class AddShifts extends React.Component {
 				<PageNavbar active="shifts" />
 
                     <div className="container addshifts-container" style={{
-        position: 'absolute', left: '50%', top: '50%',
+        position: 'absolute', left: '50%', top: '60%',
         transform: 'translate(-50%, -50%)'
     }}>
                         <div className="jumbotron" >
@@ -251,9 +251,9 @@ export default class AddShifts extends React.Component {
 
                         <div>
                             <br/>
-                            <br/>
                         </div>
 
+                        Role
                         <form >
                             <input type="text" value={this.state.selectedRole} onChange={this.handleRoleChange} />
                         </form>

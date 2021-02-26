@@ -16,7 +16,7 @@ export default class PushNotificationSender extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "http://localhost:8081/",
+            serverUrl: "https://mert-app-server.herokuapp.com/",
             allSelected: false,
             options: [],
             title: "",
@@ -181,7 +181,7 @@ export default class PushNotificationSender extends React.Component {
                 <PageNavbar active="notifications" />
 
                 <div className="container addshifts-container" style={{
-                    position: 'absolute', left: '50%', top: '50%',
+                    position: 'absolute', left: '50%', top: '60%',
                     transform: 'translate(-50%, -50%)'
                 }}>
                     <div className="jumbotron" >
@@ -221,22 +221,22 @@ export default class PushNotificationSender extends React.Component {
                             <br/><br/><br/>
                         </div>
 
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Title</span>
+                        <div className="input-group input-group-sm mb-3">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text" id="inputGroup-sizing-sm">Title</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={this.handleTitleChange}/>
+                            <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={this.handleTitleChange}/>
                         </div>
 
                         <div>
                             <br/>
                         </div>
 
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Message</span>
+                        <div className="input-group input-group-sm mb-3">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text" id="inputGroup-sizing-sm">Message</span>
                             </div>
-                            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={this.handleMessageChange}/>
+                            <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={this.handleMessageChange}/>
                         </div>
 
                         <div>
