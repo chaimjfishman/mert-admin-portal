@@ -141,7 +141,6 @@ export default class AddShifts extends React.Component {
         var file = this.state.selectedFile;
         // var text = await file.text();
         // console.log(text);
-
         const formData = new FormData();
         formData.append('file', file);
         const options = {
@@ -149,7 +148,15 @@ export default class AddShifts extends React.Component {
             body: formData,
         }
 
-        fetch(`https://mert-import-server.herokuapp.com/import`, options);
+        fetch(`https://mert-import-server.herokuapp.com/import`, options)
+        .then(res => {
+            if (res.status === 200) this.openSuccessAlert();
+            else this.openErrorAlert();
+        })
+        .catch(err => {
+            this.openErrorAlert();
+            console.log(err)
+        });	// Print the error if there is one.
     }
 
     handleMemberChange(e) {
