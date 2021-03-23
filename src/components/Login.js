@@ -1,10 +1,8 @@
 import React from 'react';
-import PageNavbar from './PageNavbar';
 import '../style/UserMonitoring.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import Card from "react-bootstrap/Card";
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;

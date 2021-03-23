@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-	BrowserRouter as Router,
-	Route,
-	Switch
-} from 'react-router-dom';
-import AddShifts from './AddShifts';
-import PushNotificationSender from './PushNotificationSender';
-import UserMonitoring from './UserMonitoring';
-import AppInfo from './AppInfo';
+
 import Routes from './Routes';
 import Login from './Login';
 
