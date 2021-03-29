@@ -16,6 +16,10 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 
+import Moment from 'react-moment';
+import 'moment-timezone';
+
+
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -179,6 +183,21 @@ function renderEventContent(eventInfo) {
         let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
         let userID = this.state.selectedMember.id;
 
+        const moment= require('moment');
+
+        // create Date object for current location
+        var newYork = moment.tz(this.state.selectedStart, "America/New_York");
+        console.log(newYork.toString());
+        var philly = moment.tz(this.state.selectedEnd, "America/New_York");
+        console.log(philly.toString());
+        this.state.selectedStart = newYork.toString();
+        this.state.selectedEnd = philly.toString();
+    
+        // create new Date object for different city
+        // using supplied offset
+
+        console.log(this.state.selectedStart);
+        console.log(this.state.selectedEnd);
 
         // Send an HTTP request to the server.
         let url = `${this.state.serverUrl}addshift/${userID}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
