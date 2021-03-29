@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { Multiselect } from 'multiselect-react-dropdown';
+
 
 import FullCalendar, { formatDate } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -44,15 +46,15 @@ function renderEventContent(eventInfo) {
 		// State maintained by this React component
 		this.state = {
             serverUrl: "https://mert-app-server.herokuapp.com/",
-            allUsers: null,
-            selectedMember: "",
+            selectedMember: null,
             selectedFile: null,
             selectedRole: null,
             selectedStart: null,
             selectedEnd: null,
-            members: [],
+            options: [],
             shiftTypes: ['day', 'overnight', 'standby', 'athletic'],
             types: [],
+
             displaySucessAlert: false,
             displayErrorAlert: false,
             displayWarningAlert: false,
@@ -62,10 +64,10 @@ function renderEventContent(eventInfo) {
             currentEvents: []
         }
         
+        this.onSelect = this.onSelect.bind(this);
         this.addShift = this.addShift.bind(this);
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleFileChange = this.handleFileChange.bind(this);
-        this.handleMemberChange = this.handleMemberChange.bind(this);
         this.handleRoleChange = this.handleRoleChange.bind(this);
         this.handleStartChange = this.handleStartChange.bind(this);
         this.handleEndChange = this.handleEndChange.bind(this);
@@ -143,19 +145,8 @@ function renderEventContent(eventInfo) {
                 return;
             }
 
-            // Map each memberObj in memberList to an HTML element:
-            let memberDivs = memberList.map((memberObj, i) =>
-                <option value={memberObj.id}> {memberObj.email} </option>
-            );
-
-            let users = {}
-            memberList.forEach(user => {
-                users[user.id] = user;
-            });
-    
             this.setState({
-                allUsers: users,
-                members: memberDivs
+                options: memberList
             })
           })
           .catch(err => {
@@ -185,11 +176,12 @@ function renderEventContent(eventInfo) {
             }, () => this.openWarningAlert())
             return;
         }
+        let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
+        let userID = this.state.selectedMember.id;
+
 
         // Send an HTTP request to the server.
-        let userPushToken = this.state.allUsers[this.state.selectedMember].pushToken;
-        let url = `${this.state.serverUrl}addshift/${this.state.selectedMember}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
-        console.log(`urs is ${url}`)
+        let url = `${this.state.serverUrl}addshift/${userID}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
         fetch(url, { 
                 method: 'GET' // The type of HTTP request.
             })
@@ -239,9 +231,13 @@ function renderEventContent(eventInfo) {
                         }) 
     }
 
-    
+    onSelect(selectedList, selectedItem) {
+        this.setState({
+			selectedMember: selectedItem
+        });   
+    }
+
       handleDateSelect = (selectInfo) => {
-          console.log('handleDateSelect')
         let title = prompt('Please enter a new title for your event')
         let calendarApi = selectInfo.view.calendar
     
@@ -298,13 +294,12 @@ function renderEventContent(eventInfo) {
         const file = e.target.files.item(0)
         this.setState({
 			selectedFile: file
-        }, () => console.log(`file changed to ${this.state.selectedFile}`));   
+        });   
     }
 
     async handleFileUpload() {
         var file = this.state.selectedFile;
         // var text = await file.text();
-        // console.log(text);
         const formData = new FormData();
         formData.append('file', file);
         const options = {
@@ -323,31 +318,22 @@ function renderEventContent(eventInfo) {
         });	// Print the error if there is one.
     }
 
-    handleMemberChange(e) {
-        if (e.target.value === 'true') {
-            e.target.value = ''
-        }
-		this.setState({
-			selectedMember: e.target.value
-        }, () => console.log(`member changed to ${this.state.selectedMember}`));   
-    }
-
     handleRoleChange(e) {
 		this.setState({
 			selectedRole: e.target.value
-        }, () => console.log(`role changed to ${this.state.selectedRole}`));
+        });
     }
     
     handleStartChange(e) {
 		this.setState({
 			selectedStart: e.target.value
-        }, () => console.log(`start changed to ${this.state.selectedStart}`));
+        });
     }
     
     handleEndChange(e) {
 		this.setState({
 			selectedEnd: e.target.value
-        }, () => console.log(`end changed to ${this.state.selectedEnd}`));
+        });
     }
     
 
@@ -400,10 +386,17 @@ function renderEventContent(eventInfo) {
         return (
           <div className='demo-app-sidebar'>
             <div className='demo-app-sidebar-section'>
-                <select value={this.state.selectedMember} onChange={this.handleMemberChange} className="dropdown" id="membersDropdown">
-                    <option select value> -- select member -- </option>
-                    {this.state.members}
-                </select>
+                <Multiselect
+                    options={this.state.options} // Options to display in the dropdown
+                    onSelect={this.onSelect} // Function will trigger on select event
+                    onRemove={this.onRemove} // Function will trigger on remove event
+                    displayValue="fullName" // Property name to display in the dropdown options
+                    ref={this.multiselectRef}
+                    closeOnSelect={false}
+                    selectionLimit={1}
+                    disable={this.state.allSelected}
+                    showCheckbox={true}
+                />
 
                 <div>
                     <br/>

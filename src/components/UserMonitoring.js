@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Card from "react-bootstrap/Card";
+import { Multiselect } from 'multiselect-react-dropdown';
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -17,9 +19,8 @@ export default class UserMonitoring extends React.Component {
 		// State maintained by this React component
 		this.state = {
             serverUrl: "https://mert-app-server.herokuapp.com/",
-            allUsers: null,
             selectedMember: null,
-            members: [],
+            options: [],
             newEmail: "",
             displaySucessAlert: false,
             displayErrorAlert: false,
@@ -27,7 +28,7 @@ export default class UserMonitoring extends React.Component {
             warningMsg: ""
         }
    
-        this.handleMemberChange = this.handleMemberChange.bind(this);
+        this.onSelect = this.onSelect.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.addEmail = this.addEmail.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
@@ -54,19 +55,8 @@ export default class UserMonitoring extends React.Component {
                 return;
             }
 
-            // Map each memberObj in memberList to an HTML element:
-            let memberDivs = memberList.map((memberObj, i) =>
-                <option value={memberObj.id}> {memberObj.email} </option>
-            );
-
-            let users = {}
-            memberList.forEach(user => {
-                users[user.id] = user;
-            });
-    
             this.setState({
-                allUsers: users,
-                members: memberDivs
+                options: memberList
             })
           })
           .catch(err => {
@@ -77,14 +67,12 @@ export default class UserMonitoring extends React.Component {
             })   
     }
 
-    handleMemberChange(e) {
-        if (e.target.value === 'true') {
-            return;
-        }
-		this.setState({
-			selectedMember: this.state.allUsers[e.target.value]
-        }, () => console.log(this.state.selectedMember));   
+    onSelect(selectedList, selectedItem) {
+        this.setState({
+			selectedMember: selectedItem
+        });   
     }
+
 
     handleEmailChange(e) {
         this.setState({ 
@@ -174,12 +162,18 @@ export default class UserMonitoring extends React.Component {
                 <div className="jumbotron" >
                 
                     <div className='rowC'>
-                        <div className='rowEl1'>
-                            <select value={this.state.selectedMember} onChange={this.handleMemberChange} className="dropdown" id="membersDropdown">
-                                <option select value> -- select member -- </option>
-                                {this.state.members}
-                            </select>
-                        </div>
+
+                        <Multiselect
+                            options={this.state.options} // Options to display in the dropdown
+                            onSelect={this.onSelect} // Function will trigger on select event
+                            onRemove={this.onRemove} // Function will trigger on remove event
+                            displayValue="fullName" // Property name to display in the dropdown options
+                            ref={this.multiselectRef}
+                            closeOnSelect={false}
+                            selectionLimit={1}
+                            disable={this.state.allSelected}
+                            showCheckbox={true}
+                        />
 
                         <div className='rowEl'>
                             <Card style={{ width: '25rem' }}>
