@@ -3,6 +3,10 @@ import '../style/UserMonitoring.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { getRectCenter } from '@fullcalendar/react';
+import { pink } from '@material-ui/core/colors';
+// import { View, StyleSheet } from 'react-native';
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -124,17 +128,22 @@ export default class Login extends React.Component {
 	
 	render() {
 		return (
-            <div>
+            <div style={mainDivStyle}>
+                <div>
+                    <h1 align="center">MERT Admin Portal</h1>
+                </div>
                 <form>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleEmailChange}/>
+                    <div class="form-group" align="center">
+                        {/* <label for="exampleInputEmail1">E-mail</label> */}
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="E-mail" onChange={this.handleEmailChange}/>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
+                    <div class="form-group" align="center">
+                        {/* <label for="exampleInputPassword1">Password</label> */}
                         <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" onChange={this.handlePasswordChange}/>
                     </div>
-                    <button type="submit" class="btn btn-primary" onClick={this.handleLogin}>Login</button>
+                    <div align="center">
+                        <button style={mainButtonStyle} type="submit" class="btn btn-primary" onClick={this.handleLogin}>Login</button>
+                    </div>
                 </form>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
@@ -155,5 +164,79 @@ export default class Login extends React.Component {
                 </Snackbar>
 		    </div>
 		);
-	}
+    }
+    
 }
+
+const mainDivStyle = {
+    fontFamily: "Arial, Helvetica, sans-serif",
+    position: "fixed",
+    width: "100%",
+    height: "100%",
+    left: 0,
+    top: 0,
+    backgroundColor: "#F0F8FF",
+    margin: "0px",
+};
+
+const mainButtonStyle = {
+    backgroundColor: "#000080",
+    borderColor: '#fff'
+}
+
+// const myStyles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         alignItems: 'center'
+//     },
+//     title: {
+
+//     },
+//     logo: {
+//         flex: 1,
+//         height: 120,
+//         width: 120,
+//         alignSelf: "center",
+//         margin: 30
+//     },
+//     input: {
+//         height: 48,
+//         borderRadius: 5,
+//         overflow: 'hidden',
+//         backgroundColor: 'white',
+//         marginTop: 10,
+//         marginBottom: 10,
+//         marginLeft: 30,
+//         marginRight: 30,
+//         paddingLeft: 16
+//     },
+//     button: {
+//         backgroundColor: '#788eec',
+//         marginLeft: 30,
+//         marginRight: 30,
+//         marginTop: 20,
+//         height: 48,
+//         borderRadius: 5,
+//         alignItems: "center",
+//         justifyContent: 'center'
+//     },
+//     buttonTitle: {
+//         color: 'white',
+//         fontSize: 16,
+//         fontWeight: "bold"
+//     },
+//     footerView: {
+//         flex: 1,
+//         alignItems: "center",
+//         marginTop: 20
+//     },
+//     footerText: {
+//         fontSize: 16,
+//         color: '#2e2e2d'
+//     },
+//     footerLink: {
+//         color: "#788eec",
+//         fontWeight: "bold",
+//         fontSize: 16
+//     }
+// })

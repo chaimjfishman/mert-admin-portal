@@ -192,9 +192,6 @@ function renderEventContent(eventInfo) {
             }, () => this.openWarningAlert())
             return;
         }
-        let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
-        let userID = this.state.selectedMember.id;
-
 
         // create Date object for current location
         var newYork = moment.tz(this.state.selectedStart, "America/New_York");
@@ -211,6 +208,7 @@ function renderEventContent(eventInfo) {
         console.log(this.state.selectedEnd);
 
         // Send an HTTP request to the server.
+        let userPushToken = this.state.allUsers[this.state.selectedMember].pushToken;
         let url = `${this.state.serverUrl}addshift/${this.state.selectedMember}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
         console.log(`urs is ${url}`)
         fetch(url, { 
