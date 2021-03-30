@@ -24,10 +24,13 @@ export default class UserMonitoring extends React.Component {
             displaySucessAlert: false,
             displayErrorAlert: false,
             displayWarningAlert: false,
-            warningMsg: ""
+            warningMsg: "",
+            selectedRank: null,
         }
    
         this.handleMemberChange = this.handleMemberChange.bind(this);
+        this.handleRankChange = this.handleRankChange.bind(this);
+        this.updateRank = this.updateRank.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.addEmail = this.addEmail.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
@@ -66,7 +69,7 @@ export default class UserMonitoring extends React.Component {
     
             this.setState({
                 allUsers: users,
-                members: memberDivs
+                members: memberDivs,
             })
           })
           .catch(err => {
@@ -84,6 +87,15 @@ export default class UserMonitoring extends React.Component {
 		this.setState({
 			selectedMember: this.state.allUsers[e.target.value]
         }, () => console.log(this.state.selectedMember));   
+    }
+
+    handleRankChange(e) {
+        if (e.target.value === 'true') {
+            return;
+        }
+        this.setState({
+            selectedRank: e.target.value
+        }, () => console.log(this.state.selectedRank));
     }
 
     handleEmailChange(e) {
@@ -114,6 +126,38 @@ export default class UserMonitoring extends React.Component {
                 this.openErrorAlert();
                 console.log(err) 
             })
+    }
+
+    updateRank(e) {
+        //send new user to DB with updated rank
+        console.log(this.state.selectedMember);
+        console.log(this.state.selectedRank);
+        let user = this.state.selectedMember;
+        user.rank = this.state.selectedRank;
+
+        this.setState({
+            selectedMember: user
+        }, () => console.log(this.state.selectedRank));
+        this.updateUser(user);
+    }
+
+    updateUser(user) {
+        console.log("updating user");
+        console.log(user);
+
+        // let url = `${this.state.serverUrl}addUser/${user.id}/${}`;
+        // // Send an HTTP request to the server.
+        // fetch(url, {
+        //         method: 'GET' // The type of HTTP request.
+        //     })
+        //     .then(res => {
+        //         if (res.status === 200) this.openSuccessAlert();
+        //         else this.openErrorAlert();
+        //     })
+        //     .catch(err => {
+        //         this.openErrorAlert();
+        //         console.log(err) 
+        //     })
     }
 
     openSuccessAlert(event, reason) {
@@ -197,6 +241,13 @@ export default class UserMonitoring extends React.Component {
                             </Card>
                         </div>
 
+                        <div className='rowEl1'>
+                            <select value={this.state.selectedRank} onChange={this.handleRankChange} className="dropdown" id="membersDropdown">
+                                <option select value> -- select rank -- </option>
+                                <option value="rank1"> rank1 </option>
+                            </select>
+                        </div>
+
                         <div className='rowEl3'>
                             <button 
                                 className="submit-btn" 
@@ -204,6 +255,14 @@ export default class UserMonitoring extends React.Component {
                                 onClick={console.log('deleted')}
                             >
                                 Remove User
+                            </button>
+                            <hr></hr>
+                            <button 
+                                className="submit-btn" 
+                                id="updateRankBtn" 
+                                onClick={this.updateRank}
+                            >
+                                Update Rank
                             </button>
                         </div>
                     </div>
