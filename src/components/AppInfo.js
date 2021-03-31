@@ -1,6 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
-import '../style/UserMonitoring.css';
+import '../style/AppInfo.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -23,7 +23,12 @@ export default class Appinfo extends React.Component {
             displaySucessAlert: false,
             displayErrorAlert: false,
             displayWarningAlert: false,
-            warningMsg: ""
+            warningMsg: "",
+
+            crew: false,
+            lead: false,
+            emt: false,
+            probemt: false
         }
         
         this.handleFormTitleChange = this.handleFormTitleChange.bind(this);
@@ -33,6 +38,11 @@ export default class Appinfo extends React.Component {
 
         this.addForm = this.addForm.bind(this);
         this.addContact = this.addContact.bind(this);
+
+        this.crewChange = this.crewChange.bind(this);
+        this.leadChange = this.leadChange.bind(this);
+        this.emtChange = this.emtChange.bind(this);
+        this.probemtChange = this.probemtChange.bind(this);
 
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
@@ -80,8 +90,16 @@ export default class Appinfo extends React.Component {
             }, () => this.openWarningAlert())
             return;
         }
-        
-        let url = `${this.state.serverUrl}addform/${this.state.newFormURL}/${this.state.newFormTitle}`;
+
+        let availableRanks = "";
+        if (this.state.crew) availableRanks += "Crew Chief,"
+        if (this.state.lead) availableRanks += "Lead,"
+        if (this.state.emt) availableRanks += "EMT,"
+        if (this.state.probemt) availableRanks += "Probationary EMT,"
+        if (!availableRanks) availableRanks = "none"
+        else availableRanks = availableRanks.replace(/,\s*$/, "")
+
+        let url = `${this.state.serverUrl}addform/${this.state.newFormURL}/${this.state.newFormTitle}/${availableRanks}`;
         // Send an HTTP request to the server.
         fetch(url, {
                 method: 'GET' // The type of HTTP request.
@@ -118,6 +136,30 @@ export default class Appinfo extends React.Component {
                 this.openErrorAlert();
                 console.log(err) 
             })
+    }
+
+    crewChange() {
+        this.setState({
+            crew: !this.state.crew
+        })
+    }
+
+    leadChange() {
+        this.setState({
+            lead: !this.state.lead
+        })
+    }
+
+    emtChange() {
+        this.setState({
+            emt: !this.state.emt
+        })
+    }
+
+    probemtChange() {
+        this.setState({
+            probemt: !this.state.probemt
+        })
     }
 
     openSuccessAlert(event, reason) {
@@ -182,7 +224,21 @@ export default class Appinfo extends React.Component {
                             <label htmlFor="exampleInputEmail1">Forms</label>
                             <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form Title" onChange={this.handleFormTitleChange}/>
                             <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form URL" onChange={this.handleFormURLChange}/>
+                            
+                            <div className="checkboxes">
+                                <span>
+                                    <input type="checkbox" id="crew" name="crew" value="crew" onChange={this.crewChange}/>
+                                    <label for="vehicle1"> Crew Chief </label>
+                                    <input type="checkbox" id="lead" name="lead" value="lead" onChange={this.leadChange}/>
+                                    <label for="vehicle2"> Lead</label>
+                                    <input type="checkbox" id="emt" name="emt" value="emt" onChange={this.emtChange}/>
+                                    <label for="vehicle3"> EMT</label>
+                                    <input type="checkbox" id="probemt" name="probemt" value="probemt" onChange={this.probemtChange}/>
+                                    <label for="vehicle3"> Probationary EMT</label>
+                                </span>
+                            </div>
                         </div>
+
                         <button className="btn btn-primary" onClick={this.addForm}>Add New Form</button>
                     </form>
 
