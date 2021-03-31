@@ -5,6 +5,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { getRectCenter } from '@fullcalendar/react';
 import { pink } from '@material-ui/core/colors';
+import '../style/Login.css';
+
 // import { View, StyleSheet } from 'react-native';
 
 
@@ -132,19 +134,18 @@ export default class Login extends React.Component {
                 <div>
                     <h1 align="center">MERT Admin Portal</h1>
                 </div>
-                <form>
-                    <div class="form-group" align="center">
-                        {/* <label for="exampleInputEmail1">E-mail</label> */}
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="E-mail" onChange={this.handleEmailChange}/>
-                    </div>
-                    <div class="form-group" align="center">
-                        {/* <label for="exampleInputPassword1">Password</label> */}
-                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" onChange={this.handlePasswordChange}/>
-                    </div>
-                    <div align="center">
-                        <button style={mainButtonStyle} type="submit" class="btn btn-primary" onClick={this.handleLogin}>Login</button>
-                    </div>
-                </form>
+                <div class="login">
+
+                <h1>Login to Portal</h1>
+                    <form>
+                        <p><input type="text" name="login" placeholder="Email" onChange={this.handleEmailChange}/></p>
+                        <p><input type="password" name="password" placeholder="Password" onChange={this.handlePasswordChange}/></p>
+                        <p className="remember_me">
+                        </p>
+                        <p className="submit"><input type="submit" name="commit" onClick={this.handleLogin} value="Login"/></p>
+                    </form>
+                </div>
+                
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
                         User Email Successfully Added!
