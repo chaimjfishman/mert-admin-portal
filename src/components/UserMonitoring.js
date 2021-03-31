@@ -117,34 +117,19 @@ export default class UserMonitoring extends React.Component {
 
     updateRank(e) {
         //send new user to DB with updated rank
-        console.log(this.state.selectedMember);
-        console.log(this.state.selectedRank);
-        let user = this.state.selectedMember;
-        user.rank = this.state.selectedRank;
-
-        this.setState({
-            selectedMember: user
-        }, () => console.log(this.state.selectedRank));
-        this.updateUser(user);
-    }
-
-    updateUser(user) {
-        console.log("updating user");
-        console.log(user);
-
-        // let url = `${this.state.serverUrl}addUser/${user.id}/${}`;
-        // // Send an HTTP request to the server.
-        // fetch(url, {
-        //         method: 'GET' // The type of HTTP request.
-        //     })
-        //     .then(res => {
-        //         if (res.status === 200) this.openSuccessAlert();
-        //         else this.openErrorAlert();
-        //     })
-        //     .catch(err => {
-        //         this.openErrorAlert();
-        //         console.log(err) 
-        //     })
+        let url = `${this.state.serverUrl}updaterank/${this.state.selectedMember.id}/${this.state.selectedRank}`;
+        // Send an HTTP request to the server.
+        fetch(url, {
+                method: 'GET' // The type of HTTP request.
+            })
+            .then(res => {
+                if (res.status === 200) this.openSuccessAlert();
+                else this.openErrorAlert();
+            })
+            .catch(err => {
+                this.openErrorAlert();
+                console.log(err) 
+            })
     }
 
     openSuccessAlert(event, reason) {
