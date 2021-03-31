@@ -66,7 +66,9 @@ function renderEventContent(eventInfo) {
             warningMsg: "",
 
             initialEvents: [],
-            currentEvents: []
+            currentEvents: [],
+            jsonFeed: [],
+            calendar: null
         }
         
         this.addShift = this.addShift.bind(this);
@@ -96,7 +98,7 @@ function renderEventContent(eventInfo) {
     componentDidMount() {
 
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "getallshifts", {
+        fetch(this.state.serverUrl + "calendarshifts", {
             method: 'GET' // The type of HTTP request.
             })
             .then(res => res.json()) // Convert the response data to a JSON.
@@ -108,19 +110,36 @@ function renderEventContent(eventInfo) {
                     return;
                 }
 
-                // Map each memberObj in memberList to an HTML element:
-                let shifts = shiftsList.map((shiftObj, i) => {
-                    return {
-                        'id': shiftObj.userID,
-                        'start': shiftObj.startTime,
-                        'end' : shiftObj.endTime,
-                        'title' : shiftObj.role
-                    }
-                });
-
                 this.setState({
-                    initialEvents: shifts
+                    jsonFeed: shiftsList,
+                    calendar: 
+                    <FullCalendar
+                        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                        headerToolbar={{
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        }}
+                        initialView='dayGridMonth'
+                        editable={true}
+                        selectable={true}
+                        selectMirror={true}
+                        dayMaxEvents={true}
+                        weekends={true}
+                        initialEvents={shiftsList} // alternatively, use the `events` setting to fetch from a feed
+                        select={this.handleDateSelect}
+                        eventContent={this.renderEventContent} // custom render function
+                        eventClick={this.handleEventClick}
+                        eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+                        // eventAdd={this.getAllShifts}
+                        /* you can update a remote database when these fire:
+                        
+                        eventChange={function(){}}
+                        eventRemove={function(){}}
+                        */
+                    />
                 })
+
             })
             .catch(err => {
                     this.setState({
@@ -520,31 +539,7 @@ function renderEventContent(eventInfo) {
                     <div className='demo-app'>
                         {this.renderSidebar()}
                         <div className='demo-app-main'>
-                            <FullCalendar
-                                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-                                headerToolbar={{
-                                    left: 'prev,next today',
-                                    center: 'title',
-                                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                                }}
-                                initialView='dayGridMonth'
-                                editable={true}
-                                selectable={true}
-                                selectMirror={true}
-                                dayMaxEvents={true}
-                                weekends={true}
-                                initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
-                                select={this.handleDateSelect}
-                                eventContent={this.renderEventContent} // custom render function
-                                eventClick={this.handleEventClick}
-                                eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-                                // eventAdd={this.getAllShifts}
-                                /* you can update a remote database when these fire:
-                                
-                                eventChange={function(){}}
-                                eventRemove={function(){}}
-                                */
-                            />
+                            {this.state.calendar}
                         </div>
                     </div>
 
