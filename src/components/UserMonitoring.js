@@ -221,7 +221,10 @@ export default class UserMonitoring extends React.Component {
                         <div className='rowEl1'>
                             <select value={this.state.selectedRank} onChange={this.handleRankChange} className="dropdown" id="membersDropdown">
                                 <option select value> -- select rank -- </option>
-                                <option value="rank1"> rank1 </option>
+                                <option value="1A Crew Chief"> A1 Crew Chief </option>
+                                <option value="1B Probationary EMT"> 1B Probationary EMT </option>
+                                <option value="1C Probationary EMT"> 1C Probationary EMT </option>
+                                <option value="1D Probationary EMT"> 1D Probationary EMT </option>
                             </select>
                         </div>
 
