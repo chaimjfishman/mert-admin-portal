@@ -202,7 +202,7 @@ export default class PushNotificationSender extends React.Component {
                             options={this.state.options} // Options to display in the dropdown
                             onSelect={this.onSelect} // Function will trigger on select event
                             onRemove={this.onRemove} // Function will trigger on remove event
-                            displayValue="email" // Property name to display in the dropdown options
+                            displayValue="fullName" // Property name to display in the dropdown options
                             ref={this.multiselectRef}
                             closeOnSelect={false}
                             disable={this.state.allSelected}
