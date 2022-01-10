@@ -115,8 +115,9 @@ export default class Appinfo extends React.Component {
     }
 
     addContact(e) {
+        e.preventDefault();
+        
         if (this.state.newContactName === '' || this.state.newContactNumber === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter both a Name and Number for the new contact'
             }, () => this.openWarningAlert())
@@ -212,10 +213,13 @@ export default class Appinfo extends React.Component {
 			<div className="UserMonitoring">
                 <PageNavbar active="appInfo" />
 
-                <div className="container addshifts-container" style={{
+                {/* Previous inline style:
+                
+                style={{
                     position: 'absolute', left: '50%', top: '50%',
                     transform: 'translate(-50%, -50%)'
-                }}>
+                }}*/}
+                <div className="container addshifts-container">
 
                     <div className="jumbotron" >
 

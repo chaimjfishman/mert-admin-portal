@@ -180,10 +180,13 @@ export default class PushNotificationSender extends React.Component {
 			<div className="PushNotificationSender">
                 <PageNavbar active="notifications" />
 
-                <div className="container addshifts-container" style={{
+                {/* Previous style setting for modal:
+                
+                    style={{
                     position: 'absolute', left: '50%', top: '60%',
                     transform: 'translate(-50%, -50%)'
-                }}>
+                }} */}
+                <div className="container addshifts-container">
                     <div className="jumbotron" >
 
                         <div className="form-check">
