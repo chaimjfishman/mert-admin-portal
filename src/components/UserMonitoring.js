@@ -213,10 +213,7 @@ export default class UserMonitoring extends React.Component {
 			<div className="UserMonitoring">
                 <PageNavbar active="users" />
 
-                <div className="container addshifts-container" style={{
-                    position: 'absolute', left: '50%', top: '50%',
-                    transform: 'translate(-50%, -50%)'
-                }}>
+                <div className="container addshifts-container">
 
                 <div className="jumbotron" >
                 
@@ -250,41 +247,40 @@ export default class UserMonitoring extends React.Component {
 
                         <div className='rowEl1'>
                             <select value={this.state.selectedRank} onChange={this.handleRankChange} className="dropdown" id="membersDropdown">
-                                <option select value> -- select rank -- </option>
+                                <option select value> -- select new rank -- </option>
                                 <option value="Crew Chief"> Crew Chief </option>
                                 <option value="Lead"> Lead </option>
                                 <option value="EMT"> EMT </option>
                                 <option value="Probationary EMT"> Probationary EMT </option>
-                            </select><br/>
+                            </select><br/><br/>
 
-                            <input value={this.state.newBoardPos} onChange={this.handleBoardPosChange} />
+                            <input value={this.state.newBoardPos} onChange={this.handleBoardPosChange} placeholder="New Board Position"/>
                         </div>
-
-                        <div className='rowEl3'>
-                            <button 
-                                className="submit-btn" 
-                                id="deleteUserBtn" 
-                                onClick={console.log('deleted')}
-                            >
-                                Remove User
-                            </button>
-                            <hr></hr>
-                            <button 
-                                className="submit-btn" 
-                                id="updateRankBtn" 
-                                onClick={this.updateRank}
-                            >
-                                Update Rank
-                            </button>
-                            <hr></hr>
-                            <button
-                                className="submit-btn"
-                                id="updateBoardPosBtn"
-                                onClick={this.updateBoardPos}
-                            >
-                                Update Board Position
-                            </button>
-                        </div>
+                    </div>
+                    
+                    <br/>
+                    <div className='button-menu1'>
+                        <button 
+                            className="submit-btn" 
+                            id="deleteUserBtn" 
+                            onClick={console.log('deleted')}
+                        >
+                            Remove User
+                        </button>
+                        <button 
+                            className="submit-btn" 
+                            id="updateRankBtn" 
+                            onClick={this.updateRank}
+                        >
+                            Update Rank
+                        </button>
+                        <button
+                            className="submit-btn"
+                            id="updateBoardPosBtn"
+                            onClick={this.updateBoardPos}
+                        >
+                            Update Board Position
+                        </button>
                     </div>
 
                     <hr></hr>
