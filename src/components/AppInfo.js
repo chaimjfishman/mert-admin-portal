@@ -15,7 +15,7 @@ export default class Appinfo extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: process.env.REACT_APP_SERVER_URL,
             newFormURL: "",
             newFormTitle: "",
             newContactName: "",
