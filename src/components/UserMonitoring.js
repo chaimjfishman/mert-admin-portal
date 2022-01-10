@@ -6,6 +6,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Card from "react-bootstrap/Card";
 import { Multiselect } from 'multiselect-react-dropdown';
+import { relativeTimeThreshold } from 'moment';
 
 
 function Alert(props) {
@@ -92,8 +93,9 @@ export default class UserMonitoring extends React.Component {
     }
 
     addEmail(e) {
+        e.preventDefault();
+
         if (this.state.newEmail === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter an email address'
             }, () => this.openWarningAlert())
@@ -106,7 +108,10 @@ export default class UserMonitoring extends React.Component {
                 method: 'GET' // The type of HTTP request.
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
+                if (res.status === 200) {
+                    this.openSuccessAlert();
+                    this.setState({newEmail: ""});
+                }
                 else this.openErrorAlert();
             })
             .catch(err => {
@@ -252,7 +257,7 @@ export default class UserMonitoring extends React.Component {
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">User Email address</label>
-                            <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleEmailChange}/>
+                            <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleEmailChange} value={this.state.newEmail}/>
                             <small id="emailHelp" className="form-text text-muted">Users must be added to have permissions to sign up in the app.</small>
                         </div>
                         <button className="btn btn-primary" onClick={this.addEmail}>Add New Email</button>
