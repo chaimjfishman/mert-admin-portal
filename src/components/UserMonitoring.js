@@ -28,12 +28,15 @@ export default class UserMonitoring extends React.Component {
             displayWarningAlert: false,
             warningMsg: "",
             selectedRank: null,
+            newBoardPos: ""
         }
    
         this.onSelect = this.onSelect.bind(this);
         this.handleRankChange = this.handleRankChange.bind(this);
         this.updateRank = this.updateRank.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handleBoardPosChange = this.handleBoardPosChange.bind(this);
+        this.updateBoardPos = this.updateBoardPos.bind(this);
         this.addEmail = this.addEmail.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
@@ -92,6 +95,12 @@ export default class UserMonitoring extends React.Component {
         });
     }
 
+    handleBoardPosChange(e) {
+        this.setState({
+            newBoardPos: e.target.value
+        });
+    }
+
     addEmail(e) {
         e.preventDefault();
 
@@ -135,7 +144,24 @@ export default class UserMonitoring extends React.Component {
                 this.openErrorAlert();
                 console.log(err) 
             })
-    }
+    };
+
+    updateBoardPos(e) {
+        // Send new board position
+        let url = `${this.state.serverUrl}updateBoardPos/${this.state.selectedMember.id}/${this.state.newBoardPos}`;
+        
+        fetch(url, {
+            method: 'GET' // FIX THIS. GET shoudl not update state
+        })
+        .then(res=>{
+            if (res.status === 200) this.openSuccessAlert();
+            else this.openErrorAlert();
+        })
+        .catch(err => {
+            this.openErrorAlert();
+            console.log(err);
+        });
+    };
 
     openSuccessAlert(event, reason) {
         this.setState({
@@ -216,8 +242,7 @@ export default class UserMonitoring extends React.Component {
                                         Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''} <br/>
                                         Rank: {this.state.selectedMember ? this.state.selectedMember.rank : ''} <br/>
                                         Completed Form: {this.state.selectedMember ? (this.state.selectedMember.formCompleted ? "Yes" : "No") : ''} <br/>
-                                        Athletic Shift Completed: {this.state.selectedMember ? (this.state.selectedMember.takenAthleticShift ? "Yes" : "No") : ''} <br/>
-                                        Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''}
+                                        Athletic Shift Completed: {this.state.selectedMember ? (this.state.selectedMember.takenAthleticShift ? "Yes" : "No") : ''}
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
@@ -230,7 +255,9 @@ export default class UserMonitoring extends React.Component {
                                 <option value="Lead"> Lead </option>
                                 <option value="EMT"> EMT </option>
                                 <option value="Probationary EMT"> Probationary EMT </option>
-                            </select>
+                            </select><br/>
+
+                            <input value={this.state.newBoardPos} onChange={this.handleBoardPosChange} />
                         </div>
 
                         <div className='rowEl3'>
@@ -248,6 +275,14 @@ export default class UserMonitoring extends React.Component {
                                 onClick={this.updateRank}
                             >
                                 Update Rank
+                            </button>
+                            <hr></hr>
+                            <button
+                                className="submit-btn"
+                                id="updateBoardPosBtn"
+                                onClick={this.updateBoardPos}
+                            >
+                                Update Board Position
                             </button>
                         </div>
                     </div>
