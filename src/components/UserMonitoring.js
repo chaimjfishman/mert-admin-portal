@@ -27,6 +27,8 @@ export default class UserMonitoring extends React.Component {
             displayErrorAlert: false,
             displayWarningAlert: false,
             warningMsg: "",
+            successMsg: "",
+            errorMsg: "",
             selectedRank: null,
             newBoardPos: ""
         }
@@ -125,12 +127,22 @@ export default class UserMonitoring extends React.Component {
             })
             .then(res => {
                 if (res.status === 200) {
+                    this.setState({
+                        newEmail: "",
+                        successMsg: "Email successfully added to whitelist"
+                    });
                     this.openSuccessAlert();
-                    this.setState({newEmail: ""});
-                }
-                else this.openErrorAlert();
+                } else {
+                    this.setState({
+                        errorMsg: "An unknown error occurred"
+                    });
+                    this.openErrorAlert();
+                };
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                })
                 this.openErrorAlert();
                 console.log(err) 
             })
@@ -152,10 +164,26 @@ export default class UserMonitoring extends React.Component {
                 }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    // Update rank on UI
+                    let u = this.state.selectedMember;
+                    u.rank = this.state.selectedRank;
+                    this.setState({
+                        successMsg: "Member rank successfully updated",
+                        selectedMember: u
+                    });
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: "An unknown error occurred"
+                    });
+                    this.openErrorAlert();
+                }
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
             })
@@ -177,10 +205,25 @@ export default class UserMonitoring extends React.Component {
             }
         })
         .then(res=>{
-            if (res.status === 200) this.openSuccessAlert();
-            else this.openErrorAlert();
+            if (res.status === 200) {
+                let u = this.state.selectedMember;
+                u.boardPosition = this.state.newBoardPos;
+                this.setState({
+                    selectedMember: u,
+                    successMsg: "Member board position successfully updated"
+                })
+                this.openSuccessAlert();
+            } else {
+                this.setState({
+                    errorMsg: "An unknown error occurred"
+                });
+                this.openErrorAlert();
+            }
         })
         .catch(err => {
+            this.setState({
+                errorMsg: err.message
+            });
             this.openErrorAlert();
             console.log(err);
         });
@@ -320,13 +363,13 @@ export default class UserMonitoring extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        User Email Successfully Added!
+                        {this.state.successMsg}
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem add the user email.
+                        {this.state.errorMsg}
                     </Alert>
                 </Snackbar>
 
