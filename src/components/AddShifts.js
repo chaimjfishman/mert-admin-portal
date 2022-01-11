@@ -218,10 +218,20 @@ function renderEventContent(eventInfo) {
         // Send an HTTP request to the server.
         let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
         let userID = this.state.selectedMember.id;
-        let url = `${this.state.serverUrl}addshift/${userID}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
-        console.log(`urs is ${url}`)
+        let url = `${this.state.serverUrl}addshift`
+        let dat = JSON.stringify({
+            userid: userID,
+            role: this.state.selectedRole,
+            start: this.state.selectedStart,
+            end: this.state.selectedEnd,
+            token: userPushToken
+        });
         fetch(url, { 
-                method: 'GET' // The type of HTTP request.
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
@@ -348,7 +358,7 @@ function renderEventContent(eventInfo) {
             body: formData,
         }
 
-        fetch(`https://mert-import-server.herokuapp.com/import`, options)
+        fetch(`${this.state.serverUrl}import`, options)
         .then(res => {
             if (res.status === 200) this.openSuccessAlert();
             else this.openErrorAlert();

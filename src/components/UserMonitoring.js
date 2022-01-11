@@ -111,10 +111,17 @@ export default class UserMonitoring extends React.Component {
             return;
         }
         
-        let url = `${this.state.serverUrl}whitelist/${this.state.newEmail}`;
+        let url = `${this.state.serverUrl}whitelist/`;
+        let dat = JSON.stringify({
+            email: this.state.newEmail
+        })
         // Send an HTTP request to the server.
         fetch(url, {
-                method: 'GET' // The type of HTTP request.
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
                 if (res.status === 200) {
@@ -131,10 +138,18 @@ export default class UserMonitoring extends React.Component {
 
     updateRank(e) {
         //send new user to DB with updated rank
-        let url = `${this.state.serverUrl}updaterank/${this.state.selectedMember.id}/${this.state.selectedRank}`;
+        let url = `${this.state.serverUrl}updaterank`;
+        let dat = JSON.stringify({
+            id: this.state.selectedMember.id,
+            rank: this.state.selectedRank
+        });
         // Send an HTTP request to the server.
         fetch(url, {
-                method: 'GET' // The type of HTTP request.
+                method: 'PUT',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
@@ -148,10 +163,18 @@ export default class UserMonitoring extends React.Component {
 
     updateBoardPos(e) {
         // Send new board position
-        let url = `${this.state.serverUrl}updateBoardPos/${this.state.selectedMember.id}/${this.state.newBoardPos}`;
-        
+        let url = `${this.state.serverUrl}updateBoardPos`;
+        let dat = JSON.stringify({
+            id: this.state.selectedMember.id,
+            pos: this.state.newBoardPos
+        });
+
         fetch(url, {
-            method: 'GET' // FIX THIS. GET shoudl not update state
+            method: 'PUT',
+            body: dat,
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         .then(res=>{
             if (res.status === 200) this.openSuccessAlert();

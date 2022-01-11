@@ -83,8 +83,9 @@ export default class Appinfo extends React.Component {
     }
 
     addForm(e) {
+        e.preventDefault();
+
         if (this.state.newFormURL === '' || this.state.newFormTitle === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter both a Title and URL for the new form'
             }, () => this.openWarningAlert())
@@ -99,10 +100,19 @@ export default class Appinfo extends React.Component {
         if (!availableRanks) availableRanks = "none"
         else availableRanks = availableRanks.replace(/,\s*$/, "")
 
-        let url = `${this.state.serverUrl}addform/${this.state.newFormURL}/${this.state.newFormTitle}/${availableRanks}`;
+        let url = `${this.state.serverUrl}addform`;
+        let dat = JSON.stringify({
+            url: this.state.newFormURL,
+            title: this.state.newFormTitle,
+            ranks: availableRanks
+        })
         // Send an HTTP request to the server.
         fetch(url, {
-                method: 'GET' // The type of HTTP request.
+                method: 'POST',
+                body: dat,
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
@@ -111,7 +121,7 @@ export default class Appinfo extends React.Component {
             .catch(err => {
                 this.openErrorAlert();
                 console.log(err) 
-            })
+            })        
     }
 
     addContact(e) {
@@ -124,10 +134,18 @@ export default class Appinfo extends React.Component {
             return;
         }
         
-        let url = `${this.state.serverUrl}addcontact/${this.state.newContactName}/${this.state.newContactNumber}`;
+        let url = `${this.state.serverUrl}addcontact/`;
+        let dat = JSON.stringify({
+            name: this.state.newContactName,
+            number: this.state.newContactNumber
+        })
         // Send an HTTP request to the server.
         fetch(url, {
-                method: 'GET' // The type of HTTP request.
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': "application/json"
+                }
             })
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
