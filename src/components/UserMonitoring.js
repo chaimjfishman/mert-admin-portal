@@ -134,7 +134,7 @@ export default class UserMonitoring extends React.Component {
                     this.openSuccessAlert();
                 } else {
                     this.setState({
-                        errorMsg: "An unknown error occurred"
+                        errorMsg: `Status ${res.status} from server (${res.statusText})`
                     });
                     this.openErrorAlert();
                 };
@@ -175,7 +175,7 @@ export default class UserMonitoring extends React.Component {
                     this.openSuccessAlert();
                 } else {
                     this.setState({
-                        errorMsg: "An unknown error occurred"
+                        errorMsg: `Status ${res.status} from server (${res.statusText})`
                     });
                     this.openErrorAlert();
                 }
@@ -215,7 +215,7 @@ export default class UserMonitoring extends React.Component {
                 this.openSuccessAlert();
             } else {
                 this.setState({
-                    errorMsg: "An unknown error occurred"
+                    errorMsg: `Status ${res.status} from server (${res.statusText})`
                 });
                 this.openErrorAlert();
             }

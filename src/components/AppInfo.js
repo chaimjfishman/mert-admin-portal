@@ -24,6 +24,8 @@ export default class Appinfo extends React.Component {
             displayErrorAlert: false,
             displayWarningAlert: false,
             warningMsg: "",
+            successMsg: "",
+            errorMsg: "",
 
             crew: false,
             lead: false,
@@ -115,10 +117,24 @@ export default class Appinfo extends React.Component {
                 }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    this.setState({
+                        newFormURL: "",
+                        newFormTitle: "",
+                        successMsg: "Form successfully added"
+                    });
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server. (${res.statusText})`
+                    })
+                    this.openErrorAlert();
+                };
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
             })        
@@ -148,10 +164,24 @@ export default class Appinfo extends React.Component {
                 }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    this.setState({
+                        newContactName: "",
+                        newContactNumber: "",
+                        successMsg: "Contact successfully added"
+                    })
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server. (${res.statusText})`
+                    });
+                    this.openErrorAlert();
+                }
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
             })
