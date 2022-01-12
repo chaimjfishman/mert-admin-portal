@@ -30,7 +30,8 @@ export default class UserMonitoring extends React.Component {
             successMsg: "",
             errorMsg: "",
             selectedRank: null,
-            newBoardPos: ""
+            newBoardPos: "",
+            displayConfirmDeleteModal: false
         }
    
         this.onSelect = this.onSelect.bind(this);
@@ -40,6 +41,9 @@ export default class UserMonitoring extends React.Component {
         this.handleBoardPosChange = this.handleBoardPosChange.bind(this);
         this.updateBoardPos = this.updateBoardPos.bind(this);
         this.addEmail = this.addEmail.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
+        this.openConfirmDeleteModal = this.openConfirmDeleteModal.bind(this);
+        this.closeConfirmDeleteModal = this.closeConfirmDeleteModal.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
         this.openErrorAlert = this.openErrorAlert.bind(this);     
@@ -229,6 +233,35 @@ export default class UserMonitoring extends React.Component {
         });
     };
 
+    deleteUser(e) {
+        this.closeConfirmDeleteModal();
+
+        let url = `${this.state.serverUrl}${this.state.selectedMember.id}`
+
+        fetch(url, {
+            method: 'DELETE'
+        }).then(res=> {
+            if (res.status == 200 || res.status == 202) {
+                this.setState({
+                    selectedMember: null,
+                    successMsg: "Member successfully deleted",
+                });
+                this.openSuccessAlert();
+            } else {
+                this.setState({
+                    errorMsg: `Status ${res.status} from server (${res.statusText})`
+                });
+                this.openErrorAlert();
+            }
+        }).catch(err=> {
+            this.setState({
+                errorMsg: err.message
+            });
+            this.openErrorAlert();
+            console.log(err);
+        });
+    };
+
     openSuccessAlert(event, reason) {
         this.setState({
             displaySuccessAlert: true
@@ -273,11 +306,42 @@ export default class UserMonitoring extends React.Component {
             displayWarningAlert: false
         })
     };
+
+    openConfirmDeleteModal() {
+        if (this.state.selectedMember != null) {
+            this.setState({
+                displayConfirmDeleteModal: true
+            });
+        } else {
+            this.setState({
+                displayErrorAlert: true,
+                errorMsg: "Error, no user selected"
+            });
+        };
+    };
+
+    closeConfirmDeleteModal() {
+        this.setState({
+            displayConfirmDeleteModal: false
+        });
+    };
 	
 	render() {
 		return (
 			<div className="UserMonitoring">
                 <PageNavbar active="users" />
+
+                {/* Display modal if confirming delete */}
+                {this.state.displayConfirmDeleteModal 
+                    ? <div className='confirm-delete-user-modal'>
+                        <div className='confirm-delete-user-prompt'>
+                            Are you sure you want to delete this user? This is a destructive action.
+                            <br/>
+                            <button className='modal-bttn' onClick={this.closeConfirmDeleteModal}>Cancel</button>
+                            <button className='modal-bttn' onClick={this.deleteUser}>Confirm</button>
+                        </div>
+                    </div> 
+                    : null}
 
                 <div className="container addshifts-container">
 
@@ -329,7 +393,7 @@ export default class UserMonitoring extends React.Component {
                         <button 
                             className="submit-btn" 
                             id="deleteUserBtn" 
-                            onClick={console.log('deleted')}
+                            onClick={this.openConfirmDeleteModal}
                         >
                             Remove User
                         </button>
