@@ -236,15 +236,18 @@ export default class UserMonitoring extends React.Component {
     deleteUser(e) {
         this.closeConfirmDeleteModal();
 
-        let url = `${this.state.serverUrl}${this.state.selectedMember.id}`
+        let url = `${this.state.serverUrl}members/${this.state.selectedMember.id}`
 
         fetch(url, {
             method: 'DELETE'
         }).then(res=> {
             if (res.status == 200 || res.status == 202) {
+                let options = this.state.options;
+                options.splice(options.indexOf(this.selectedMember), 1);
                 this.setState({
                     selectedMember: null,
                     successMsg: "Member successfully deleted",
+                    options: options
                 });
                 this.openSuccessAlert();
             } else {
