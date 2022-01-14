@@ -274,18 +274,18 @@ export default class Appinfo extends React.Component {
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Forms</label>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form Title" onChange={this.handleFormTitleChange}/>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form URL" onChange={this.handleFormURLChange}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form Title" onChange={this.handleFormTitleChange} value={this.state.newFormTitle}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form URL" onChange={this.handleFormURLChange} value={this.state.newFormURL}/>
                             
                             <div className="checkboxes">
                                 <span>
-                                    <input type="checkbox" id="crew" name="crew" value="crew" onChange={this.crewChange}/>
+                                    <input type="checkbox" id="crew" name="crew" value="crew" onChange={this.crewChange} value={this.state.crew}/>
                                     <label for="vehicle1"> Crew Chief </label>
-                                    <input type="checkbox" id="lead" name="lead" value="lead" onChange={this.leadChange}/>
+                                    <input type="checkbox" id="lead" name="lead" value="lead" onChange={this.leadChange} value={this.state.lead}/>
                                     <label for="vehicle2"> Lead</label>
-                                    <input type="checkbox" id="emt" name="emt" value="emt" onChange={this.emtChange}/>
+                                    <input type="checkbox" id="emt" name="emt" value="emt" onChange={this.emtChange} value={this.state.emt}/>
                                     <label for="vehicle3"> EMT</label>
-                                    <input type="checkbox" id="probemt" name="probemt" value="probemt" onChange={this.probemtChange}/>
+                                    <input type="checkbox" id="probemt" name="probemt" value="probemt" onChange={this.probemtChange} value={this.state.probemt}/>
                                     <label for="vehicle3"> Probationary EMT</label>
                                 </span>
                             </div>
@@ -299,8 +299,8 @@ export default class Appinfo extends React.Component {
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Contacts</label>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Name" onChange={this.handleContactNameChange}/>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Number" onChange={this.handleContactNumberChange}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Name" onChange={this.handleContactNameChange} value={this.state.newContactName}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Number" onChange={this.handleContactNumberChange} value={this.state.newContactNumber}/>
                         </div>
                         <button className="btn btn-primary" onClick={this.addContact}>Add New Contact</button>
                     </form>
@@ -309,13 +309,13 @@ export default class Appinfo extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        User Email Successfully Added!
+                        {this.state.successMsg}
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem add the user email.
+                        {this.state.errorMsg}
                     </Alert>
                 </Snackbar>
 
