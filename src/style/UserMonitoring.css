@@ -22,3 +22,26 @@
     margin: 10%;
 }
 
+.button-menu1{
+    padding: 10px;
+}
+
+.confirm-delete-user-modal{
+    z-index: 1;
+    background-color: rgba(82, 71, 73, 0.3);
+    position: absolute;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-content: center;
+}
+
+.confirm-delete-user-prompt {
+    background-color: white;
+    padding: 10px;
+}
+
+.modal-bttn {
+    margin: 10px;
+}

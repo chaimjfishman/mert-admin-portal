@@ -9,7 +9,7 @@ export default class App extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            authenticated: localStorage.getItem( 'adminPortalUserAuthenticated' ) || false
+            authenticated: sessionStorage.getItem( 'token' ) || false
         }
         
         this.authenticateUser = this.authenticateUser.bind(this);
@@ -22,7 +22,6 @@ export default class App extends React.Component {
 
 
 	authenticateUser() {
-		localStorage.setItem( 'adminPortalUserAuthenticated', true );
 		this.setState({ 
             authenticated: true
         });

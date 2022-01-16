@@ -20,7 +20,7 @@ export default class Login extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: process.env.REACT_APP_SERVER_URL,
             newEmail: "",
             newPassword: "",
             displaySucessAlert: false,
@@ -70,15 +70,34 @@ export default class Login extends React.Component {
             return;
         }
         
-        if (!(this.state.newEmail === 'test@gmail.com' && this.state.newPassword === 'password')) {
-            e.preventDefault();
+        // Set token in session storage. Create more secure solution in the future
+        fetch(`${process.env.REACT_APP_SERVER_URL}login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'email': this.state.newEmail,
+                'password': this.state.newPassword
+            })
+        }).then(res => {
+            if (res.status != 200) {
+                throw Error;
+            } else {
+                return res.json()
+            }
+        }).then(res => {
+            window.sessionStorage.setItem("token", res.token);
+            this.props.authenticateUser();
+        }).catch(res => {
             this.setState({
-                warningMsg: 'Email and password are not correct'
-            }, () => this.openWarningAlert())
-            return;
-        } 
+                warningMsg: "Incorrect email/password or user does not have admin access",
+                displayWarningAlert: true
+            });
+        });
+        e.preventDefault()
+        return;
         
-        this.props.authenticateUser();
     }
 
     

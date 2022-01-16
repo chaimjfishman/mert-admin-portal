@@ -6,6 +6,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Card from "react-bootstrap/Card";
 import { Multiselect } from 'multiselect-react-dropdown';
+import { relativeTimeThreshold } from 'moment';
+import authFetch from '../utils/authFetch'
 
 
 function Alert(props) {
@@ -18,7 +20,7 @@ export default class UserMonitoring extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: process.env.REACT_APP_SERVER_URL,
             selectedMember: null,
             options: [],
             newEmail: "",
@@ -26,14 +28,23 @@ export default class UserMonitoring extends React.Component {
             displayErrorAlert: false,
             displayWarningAlert: false,
             warningMsg: "",
+            successMsg: "",
+            errorMsg: "",
             selectedRank: null,
+            newBoardPos: "",
+            displayConfirmDeleteModal: false
         }
    
         this.onSelect = this.onSelect.bind(this);
         this.handleRankChange = this.handleRankChange.bind(this);
         this.updateRank = this.updateRank.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handleBoardPosChange = this.handleBoardPosChange.bind(this);
+        this.updateBoardPos = this.updateBoardPos.bind(this);
         this.addEmail = this.addEmail.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
+        this.openConfirmDeleteModal = this.openConfirmDeleteModal.bind(this);
+        this.closeConfirmDeleteModal = this.closeConfirmDeleteModal.bind(this);
         this.openSuccessAlert = this.openSuccessAlert.bind(this);     
         this.closeSuccessAlert = this.closeSuccessAlert.bind(this);     
         this.openErrorAlert = this.openErrorAlert.bind(this);     
@@ -46,7 +57,7 @@ export default class UserMonitoring extends React.Component {
     
     componentDidMount() {
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "members", {
+        authFetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -91,25 +102,52 @@ export default class UserMonitoring extends React.Component {
         });
     }
 
+    handleBoardPosChange(e) {
+        this.setState({
+            newBoardPos: e.target.value
+        });
+    }
+
     addEmail(e) {
+        e.preventDefault();
+
         if (this.state.newEmail === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter an email address'
             }, () => this.openWarningAlert())
             return;
         }
         
-        let url = `${this.state.serverUrl}whitelist/${this.state.newEmail}`;
+        let url = `${this.state.serverUrl}whitelist/`;
+        let dat = JSON.stringify({
+            email: this.state.newEmail.toLowerCase()
+        })
         // Send an HTTP request to the server.
-        fetch(url, {
-                method: 'GET' // The type of HTTP request.
+        authFetch(url, {
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    this.setState({
+                        newEmail: "",
+                        successMsg: "Email successfully added to whitelist"
+                    });
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server (${res.statusText})`
+                    });
+                    this.openErrorAlert();
+                };
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                })
                 this.openErrorAlert();
                 console.log(err) 
             })
@@ -117,20 +155,116 @@ export default class UserMonitoring extends React.Component {
 
     updateRank(e) {
         //send new user to DB with updated rank
-        let url = `${this.state.serverUrl}updaterank/${this.state.selectedMember.id}/${this.state.selectedRank}`;
+        let url = `${this.state.serverUrl}updaterank`;
+        let dat = JSON.stringify({
+            id: this.state.selectedMember.id,
+            rank: this.state.selectedRank
+        });
         // Send an HTTP request to the server.
-        fetch(url, {
-                method: 'GET' // The type of HTTP request.
+        authFetch(url, {
+                method: 'PUT',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    // Update rank on UI
+                    let u = this.state.selectedMember;
+                    u.rank = this.state.selectedRank;
+                    this.setState({
+                        successMsg: "Member rank successfully updated",
+                        selectedMember: u
+                    });
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server (${res.statusText})`
+                    });
+                    this.openErrorAlert();
+                }
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
             })
-    }
+    };
+
+    updateBoardPos(e) {
+        // Send new board position
+        let url = `${this.state.serverUrl}updateBoardPos`;
+        let dat = JSON.stringify({
+            id: this.state.selectedMember.id,
+            pos: this.state.newBoardPos
+        });
+
+        authFetch(url, {
+            method: 'PUT',
+            body: dat,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res=>{
+            if (res.status === 200) {
+                let u = this.state.selectedMember;
+                u.boardPosition = this.state.newBoardPos;
+                this.setState({
+                    selectedMember: u,
+                    successMsg: "Member board position successfully updated"
+                })
+                this.openSuccessAlert();
+            } else {
+                this.setState({
+                    errorMsg: `Status ${res.status} from server (${res.statusText})`
+                });
+                this.openErrorAlert();
+            }
+        })
+        .catch(err => {
+            this.setState({
+                errorMsg: err.message
+            });
+            this.openErrorAlert();
+            console.log(err);
+        });
+    };
+
+    deleteUser(e) {
+        this.closeConfirmDeleteModal();
+
+        let url = `${this.state.serverUrl}members/${this.state.selectedMember.id}`
+
+        authFetch(url, {
+            method: 'DELETE'
+        }).then(res=> {
+            if (res.status == 200 || res.status == 202) {
+                let options = this.state.options;
+                options.splice(options.indexOf(this.selectedMember), 1);
+                this.setState({
+                    selectedMember: null,
+                    successMsg: "Member successfully deleted",
+                    options: options
+                });
+                this.openSuccessAlert();
+            } else {
+                this.setState({
+                    errorMsg: `Status ${res.status} from server (${res.statusText})`
+                });
+                this.openErrorAlert();
+            }
+        }).catch(err=> {
+            this.setState({
+                errorMsg: err.message
+            });
+            this.openErrorAlert();
+            console.log(err);
+        });
+    };
 
     openSuccessAlert(event, reason) {
         this.setState({
@@ -176,16 +310,44 @@ export default class UserMonitoring extends React.Component {
             displayWarningAlert: false
         })
     };
+
+    openConfirmDeleteModal() {
+        if (this.state.selectedMember != null) {
+            this.setState({
+                displayConfirmDeleteModal: true
+            });
+        } else {
+            this.setState({
+                displayErrorAlert: true,
+                errorMsg: "Error, no user selected"
+            });
+        };
+    };
+
+    closeConfirmDeleteModal() {
+        this.setState({
+            displayConfirmDeleteModal: false
+        });
+    };
 	
 	render() {
 		return (
 			<div className="UserMonitoring">
                 <PageNavbar active="users" />
 
-                <div className="container addshifts-container" style={{
-                    position: 'absolute', left: '50%', top: '50%',
-                    transform: 'translate(-50%, -50%)'
-                }}>
+                {/* Display modal if confirming delete */}
+                {this.state.displayConfirmDeleteModal 
+                    ? <div className='confirm-delete-user-modal'>
+                        <div className='confirm-delete-user-prompt'>
+                            Are you sure you want to delete this user? This is a destructive action.
+                            <br/>
+                            <button className='modal-bttn' onClick={this.closeConfirmDeleteModal}>Cancel</button>
+                            <button className='modal-bttn' onClick={this.deleteUser}>Confirm</button>
+                        </div>
+                    </div> 
+                    : null}
+
+                <div className="container addshifts-container">
 
                 <div className="jumbotron" >
                 
@@ -211,8 +373,7 @@ export default class UserMonitoring extends React.Component {
                                         Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''} <br/>
                                         Rank: {this.state.selectedMember ? this.state.selectedMember.rank : ''} <br/>
                                         Completed Form: {this.state.selectedMember ? (this.state.selectedMember.formCompleted ? "Yes" : "No") : ''} <br/>
-                                        Athletic Shift Completed: {this.state.selectedMember ? (this.state.selectedMember.takenAthleticShift ? "Yes" : "No") : ''} <br/>
-                                        Board Position: {this.state.selectedMember ? this.state.selectedMember.boardPosition : ''}
+                                        Athletic Shift Completed: {this.state.selectedMember ? (this.state.selectedMember.takenAthleticShift ? "Yes" : "No") : ''}
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
@@ -220,31 +381,40 @@ export default class UserMonitoring extends React.Component {
 
                         <div className='rowEl1'>
                             <select value={this.state.selectedRank} onChange={this.handleRankChange} className="dropdown" id="membersDropdown">
-                                <option select value> -- select rank -- </option>
+                                <option select value> -- select new rank -- </option>
                                 <option value="Crew Chief"> Crew Chief </option>
                                 <option value="Lead"> Lead </option>
                                 <option value="EMT"> EMT </option>
                                 <option value="Probationary EMT"> Probationary EMT </option>
-                            </select>
-                        </div>
+                            </select><br/><br/>
 
-                        <div className='rowEl3'>
-                            <button 
-                                className="submit-btn" 
-                                id="deleteUserBtn" 
-                                onClick={console.log('deleted')}
-                            >
-                                Remove User
-                            </button>
-                            <hr></hr>
-                            <button 
-                                className="submit-btn" 
-                                id="updateRankBtn" 
-                                onClick={this.updateRank}
-                            >
-                                Update Rank
-                            </button>
+                            <input value={this.state.newBoardPos} onChange={this.handleBoardPosChange} placeholder="New Board Position"/>
                         </div>
+                    </div>
+                    
+                    <br/>
+                    <div className='button-menu1'>
+                        <button 
+                            className="submit-btn" 
+                            id="deleteUserBtn" 
+                            onClick={this.openConfirmDeleteModal}
+                        >
+                            Remove User
+                        </button>
+                        <button 
+                            className="submit-btn" 
+                            id="updateRankBtn" 
+                            onClick={this.updateRank}
+                        >
+                            Update Rank
+                        </button>
+                        <button
+                            className="submit-btn"
+                            id="updateBoardPosBtn"
+                            onClick={this.updateBoardPos}
+                        >
+                            Update Board Position
+                        </button>
                     </div>
 
                     <hr></hr>
@@ -252,7 +422,7 @@ export default class UserMonitoring extends React.Component {
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">User Email address</label>
-                            <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleEmailChange}/>
+                            <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleEmailChange} value={this.state.newEmail}/>
                             <small id="emailHelp" className="form-text text-muted">Users must be added to have permissions to sign up in the app.</small>
                         </div>
                         <button className="btn btn-primary" onClick={this.addEmail}>Add New Email</button>
@@ -261,13 +431,13 @@ export default class UserMonitoring extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        User Email Successfully Added!
+                        {this.state.successMsg}
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem add the user email.
+                        {this.state.errorMsg}
                     </Alert>
                 </Snackbar>
 

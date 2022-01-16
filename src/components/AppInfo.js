@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import authFetch from '../utils/authFetch';
 import '../style/AppInfo.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -15,7 +16,7 @@ export default class Appinfo extends React.Component {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: process.env.REACT_APP_SERVER_URL,
             newFormURL: "",
             newFormTitle: "",
             newContactName: "",
@@ -24,6 +25,8 @@ export default class Appinfo extends React.Component {
             displayErrorAlert: false,
             displayWarningAlert: false,
             warningMsg: "",
+            successMsg: "",
+            errorMsg: "",
 
             crew: false,
             lead: false,
@@ -83,8 +86,9 @@ export default class Appinfo extends React.Component {
     }
 
     addForm(e) {
+        e.preventDefault();
+
         if (this.state.newFormURL === '' || this.state.newFormTitle === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter both a Title and URL for the new form'
             }, () => this.openWarningAlert())
@@ -99,40 +103,86 @@ export default class Appinfo extends React.Component {
         if (!availableRanks) availableRanks = "none"
         else availableRanks = availableRanks.replace(/,\s*$/, "")
 
-        let url = `${this.state.serverUrl}addform/${this.state.newFormURL}/${this.state.newFormTitle}/${availableRanks}`;
+        let url = `${this.state.serverUrl}addform`;
+        let dat = JSON.stringify({
+            url: this.state.newFormURL,
+            title: this.state.newFormTitle,
+            ranks: availableRanks
+        })
         // Send an HTTP request to the server.
-        fetch(url, {
-                method: 'GET' // The type of HTTP request.
+        authFetch(url, {
+                method: 'POST',
+                body: dat,
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    this.setState({
+                        newFormURL: "",
+                        newFormTitle: "",
+                        successMsg: "Form successfully added"
+                    });
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server. (${res.statusText})`
+                    })
+                    this.openErrorAlert();
+                };
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
-            })
+            })        
     }
 
     addContact(e) {
+        e.preventDefault();
+        
         if (this.state.newContactName === '' || this.state.newContactNumber === '') {
-            e.preventDefault();
             this.setState({
                 warningMsg: 'You must enter both a Name and Number for the new contact'
             }, () => this.openWarningAlert())
             return;
         }
         
-        let url = `${this.state.serverUrl}addcontact/${this.state.newContactName}/${this.state.newContactNumber}`;
+        let url = `${this.state.serverUrl}addcontact/`;
+        let dat = JSON.stringify({
+            name: this.state.newContactName,
+            number: this.state.newContactNumber
+        })
         // Send an HTTP request to the server.
-        fetch(url, {
-                method: 'GET' // The type of HTTP request.
+        authFetch(url, {
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': "application/json"
+                }
             })
             .then(res => {
-                if (res.status === 200) this.openSuccessAlert();
-                else this.openErrorAlert();
+                if (res.status === 200) {
+                    this.setState({
+                        newContactName: "",
+                        newContactNumber: "",
+                        successMsg: "Contact successfully added"
+                    })
+                    this.openSuccessAlert();
+                } else {
+                    this.setState({
+                        errorMsg: `Status ${res.status} from server. (${res.statusText})`
+                    });
+                    this.openErrorAlert();
+                }
             })
             .catch(err => {
+                this.setState({
+                    errorMsg: err.message
+                });
                 this.openErrorAlert();
                 console.log(err) 
             })
@@ -212,28 +262,31 @@ export default class Appinfo extends React.Component {
 			<div className="UserMonitoring">
                 <PageNavbar active="appInfo" />
 
-                <div className="container addshifts-container" style={{
+                {/* Previous inline style:
+                
+                style={{
                     position: 'absolute', left: '50%', top: '50%',
                     transform: 'translate(-50%, -50%)'
-                }}>
+                }}*/}
+                <div className="container addshifts-container">
 
                     <div className="jumbotron" >
 
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Forms</label>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form Title" onChange={this.handleFormTitleChange}/>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form URL" onChange={this.handleFormURLChange}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form Title" onChange={this.handleFormTitleChange} value={this.state.newFormTitle}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Form URL" onChange={this.handleFormURLChange} value={this.state.newFormURL}/>
                             
                             <div className="checkboxes">
                                 <span>
-                                    <input type="checkbox" id="crew" name="crew" value="crew" onChange={this.crewChange}/>
+                                    <input type="checkbox" id="crew" name="crew" value="crew" onChange={this.crewChange} value={this.state.crew}/>
                                     <label for="vehicle1"> Crew Chief </label>
-                                    <input type="checkbox" id="lead" name="lead" value="lead" onChange={this.leadChange}/>
+                                    <input type="checkbox" id="lead" name="lead" value="lead" onChange={this.leadChange} value={this.state.lead}/>
                                     <label for="vehicle2"> Lead</label>
-                                    <input type="checkbox" id="emt" name="emt" value="emt" onChange={this.emtChange}/>
+                                    <input type="checkbox" id="emt" name="emt" value="emt" onChange={this.emtChange} value={this.state.emt}/>
                                     <label for="vehicle3"> EMT</label>
-                                    <input type="checkbox" id="probemt" name="probemt" value="probemt" onChange={this.probemtChange}/>
+                                    <input type="checkbox" id="probemt" name="probemt" value="probemt" onChange={this.probemtChange} value={this.state.probemt}/>
                                     <label for="vehicle3"> Probationary EMT</label>
                                 </span>
                             </div>
@@ -247,8 +300,8 @@ export default class Appinfo extends React.Component {
                     <form>
                         <div className="form-group">
                             <label htmlFor="exampleInputEmail1">Contacts</label>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Name" onChange={this.handleContactNameChange}/>
-                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Number" onChange={this.handleContactNumberChange}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Name" onChange={this.handleContactNameChange} value={this.state.newContactName}/>
+                            <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Contact Number" onChange={this.handleContactNumberChange} value={this.state.newContactNumber}/>
                         </div>
                         <button className="btn btn-primary" onClick={this.addContact}>Add New Contact</button>
                     </form>
@@ -257,13 +310,13 @@ export default class Appinfo extends React.Component {
                 </div>
                 <Snackbar open={this.state.displaySuccessAlert} autoHideDuration={6000} onClose={this.closeSuccessAlert}>
                     <Alert onClose={this.closeSuccessAlert} severity="success">
-                        User Email Successfully Added!
+                        {this.state.successMsg}
                     </Alert>
                 </Snackbar>
 
                 <Snackbar open={this.state.displayErrorAlert} autoHideDuration={6000} onClose={this.closeErrorAlert}>
                     <Alert onClose={this.closeErrorAlert} severity="error">
-                        Error: There was a problem add the user email.
+                        {this.state.errorMsg}
                     </Alert>
                 </Snackbar>
 

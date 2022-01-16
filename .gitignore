@@ -10,5 +10,6 @@ lerna-debug.log*
 node_modules/
 jspm_packages/
 
+.env
 
 .DS_Store

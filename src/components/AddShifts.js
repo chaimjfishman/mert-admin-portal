@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import authFetch from '../utils/authFetch'
 import '../style/AddShifts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@material-ui/core/TextField';
@@ -51,7 +52,7 @@ function renderEventContent(eventInfo) {
 
 		// State maintained by this React component
 		this.state = {
-            serverUrl: "https://mert-app-server.herokuapp.com/",
+            serverUrl: process.env.REACT_APP_SERVER_URL,
             selectedMember: null,
             selectedFile: null,
             selectedRole: null,
@@ -98,7 +99,7 @@ function renderEventContent(eventInfo) {
     componentDidMount() {
 
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "calendarshifts", {
+        authFetch(this.state.serverUrl + "calendarshifts", {
             method: 'GET' // The type of HTTP request.
             })
             .then(res => res.json()) // Convert the response data to a JSON.
@@ -157,7 +158,7 @@ function renderEventContent(eventInfo) {
         // })
 
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "members", {
+        authFetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -218,10 +219,20 @@ function renderEventContent(eventInfo) {
         // Send an HTTP request to the server.
         let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
         let userID = this.state.selectedMember.id;
-        let url = `${this.state.serverUrl}addshift/${userID}/${this.state.selectedRole}/${this.state.selectedStart}/${this.state.selectedEnd}/${userPushToken}`
-        console.log(`urs is ${url}`)
+        let url = `${this.state.serverUrl}addshift`
+        let dat = JSON.stringify({
+            userid: userID,
+            role: this.state.selectedRole,
+            start: this.state.selectedStart,
+            end: this.state.selectedEnd,
+            token: userPushToken
+        });
         fetch(url, { 
-                method: 'GET' // The type of HTTP request.
+                method: 'POST',
+                body: dat,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
             .then(res => {
                 if (res.status === 200) this.openSuccessAlert();
@@ -348,7 +359,7 @@ function renderEventContent(eventInfo) {
             body: formData,
         }
 
-        fetch(`https://mert-import-server.herokuapp.com/import`, options)
+        fetch(`${this.state.serverUrl}import`, options)
         .then(res => {
             if (res.status === 200) this.openSuccessAlert();
             else this.openErrorAlert();
