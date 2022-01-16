@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import authFetch from '../utils/authFetch';
 import '../style/PushNotificationSender.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Multiselect } from 'multiselect-react-dropdown';
@@ -46,7 +47,7 @@ export default class PushNotificationSender extends React.Component {
     
     componentDidMount() {
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "members", {
+        authFetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -91,7 +92,7 @@ export default class PushNotificationSender extends React.Component {
 
         let url = `${this.state.serverUrl}notifications/${pushTokens}/${this.state.title}/${this.state.message}`
         // Send an HTTP request to the server.
-        fetch(url, {
+        authFetch(url, {
                 method: 'GET' // The type of HTTP request.
             })
             .then(res => {

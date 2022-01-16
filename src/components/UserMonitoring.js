@@ -7,6 +7,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Card from "react-bootstrap/Card";
 import { Multiselect } from 'multiselect-react-dropdown';
 import { relativeTimeThreshold } from 'moment';
+import authFetch from '../utils/authFetch'
 
 
 function Alert(props) {
@@ -56,7 +57,7 @@ export default class UserMonitoring extends React.Component {
     
     componentDidMount() {
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "members", {
+        authFetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
@@ -122,7 +123,7 @@ export default class UserMonitoring extends React.Component {
             email: this.state.newEmail
         })
         // Send an HTTP request to the server.
-        fetch(url, {
+        authFetch(url, {
                 method: 'POST',
                 body: dat,
                 headers: {
@@ -160,7 +161,7 @@ export default class UserMonitoring extends React.Component {
             rank: this.state.selectedRank
         });
         // Send an HTTP request to the server.
-        fetch(url, {
+        authFetch(url, {
                 method: 'PUT',
                 body: dat,
                 headers: {
@@ -201,7 +202,7 @@ export default class UserMonitoring extends React.Component {
             pos: this.state.newBoardPos
         });
 
-        fetch(url, {
+        authFetch(url, {
             method: 'PUT',
             body: dat,
             headers: {
@@ -238,7 +239,7 @@ export default class UserMonitoring extends React.Component {
 
         let url = `${this.state.serverUrl}members/${this.state.selectedMember.id}`
 
-        fetch(url, {
+        authFetch(url, {
             method: 'DELETE'
         }).then(res=> {
             if (res.status == 200 || res.status == 202) {

@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import authFetch from '../utils/authFetch';
 import '../style/AppInfo.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -109,7 +110,7 @@ export default class Appinfo extends React.Component {
             ranks: availableRanks
         })
         // Send an HTTP request to the server.
-        fetch(url, {
+        authFetch(url, {
                 method: 'POST',
                 body: dat,
                 headers: {
@@ -156,7 +157,7 @@ export default class Appinfo extends React.Component {
             number: this.state.newContactNumber
         })
         // Send an HTTP request to the server.
-        fetch(url, {
+        authFetch(url, {
                 method: 'POST',
                 body: dat,
                 headers: {

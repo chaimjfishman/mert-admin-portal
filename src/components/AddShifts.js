@@ -1,5 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import authFetch from '../utils/authFetch'
 import '../style/AddShifts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@material-ui/core/TextField';
@@ -98,7 +99,7 @@ function renderEventContent(eventInfo) {
     componentDidMount() {
 
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "calendarshifts", {
+        authFetch(this.state.serverUrl + "calendarshifts", {
             method: 'GET' // The type of HTTP request.
             })
             .then(res => res.json()) // Convert the response data to a JSON.
@@ -157,7 +158,7 @@ function renderEventContent(eventInfo) {
         // })
 
         // Send an HTTP request to the server.
-        fetch(this.state.serverUrl + "members", {
+        authFetch(this.state.serverUrl + "members", {
           method: 'GET' // The type of HTTP request.
         })
           .then(res => res.json()) // Convert the response data to a JSON.
