@@ -1,5 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import session from 'selenium-webdriver/lib/session';
 
 export default class PageNavbar extends React.Component {
 	constructor(props) {
@@ -44,6 +45,8 @@ export default class PageNavbar extends React.Component {
 			        <div className="navbar-nav">
 			        {this.state.navDivs}
 			        </div>
+					
+					<button onClick={()=>{sessionStorage.clear(); window.location.reload()}}>Log out</button>
 			      </div>
 			    </nav>
 			</div>

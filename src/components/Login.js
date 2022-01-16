@@ -89,7 +89,12 @@ export default class Login extends React.Component {
         }).then(res => {
             window.sessionStorage.setItem("token", res.token);
             this.props.authenticateUser();
-        })
+        }).catch(res => {
+            this.setState({
+                warningMsg: "Incorrect email/password or user does not have admin access",
+                displayWarningAlert: true
+            });
+        });
         e.preventDefault()
         return;
         
