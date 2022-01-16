@@ -120,7 +120,7 @@ export default class UserMonitoring extends React.Component {
         
         let url = `${this.state.serverUrl}whitelist/`;
         let dat = JSON.stringify({
-            email: this.state.newEmail
+            email: this.state.newEmail.toLowerCase()
         })
         // Send an HTTP request to the server.
         authFetch(url, {
