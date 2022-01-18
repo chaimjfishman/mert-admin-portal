@@ -53,9 +53,8 @@ function renderEventContent(eventInfo) {
 		// State maintained by this React component
 		this.state = {
             serverUrl: process.env.REACT_APP_SERVER_URL,
-            selectedMember: null,
+            selectedMembers: [],
             selectedFile: null,
-            selectedRole: null,
             selectedStart: null,
             selectedEnd: null,
             options: [],
@@ -73,6 +72,7 @@ function renderEventContent(eventInfo) {
         }
         
         this.onSelect = this.onSelect.bind(this);
+        this.onRemove = this.onRemove.bind(this);
         this.addShift = this.addShift.bind(this);
         this.handleFileUpload = this.handleFileUpload.bind(this);
         this.handleFileChange = this.handleFileChange.bind(this);
@@ -110,6 +110,31 @@ function renderEventContent(eventInfo) {
                     }, () => this.openWarningAlert())
                     return;
                 }
+                
+                const eventsList = shiftsList.map(shift => {
+                    let maxNum = 3;
+                    let numLeads = 0;
+                    console.log(shift.members)
+                    for (let i=0; i<shift.members.length; i++) {
+                        if (shift.members[i].role == 'Crew Chief') {
+                            maxNum = 4;
+                            break;
+                        } else if (shift.members[i].role == 'Lead') {
+                            numLeads ++;
+                        };
+                    }
+
+                    if (numLeads >= 2) {
+                        maxNum = 4;
+                    }
+
+                    return {
+                        start: shift.start,
+                        end: shift.end,
+                        id: shift.id,
+                        title: `${shift.members.length} / ${maxNum}`
+                    };
+                });
 
                 this.setState({
                     jsonFeed: shiftsList,
@@ -125,9 +150,9 @@ function renderEventContent(eventInfo) {
                         editable={true}
                         selectable={true}
                         selectMirror={true}
-                        dayMaxEvents={true}
+                        dayMaxEvents={false}
                         weekends={true}
-                        initialEvents={shiftsList} // alternatively, use the `events` setting to fetch from a feed
+                        initialEvents={eventsList} // alternatively, use the `events` setting to fetch from a feed
                         select={this.handleDateSelect}
                         eventContent={this.renderEventContent} // custom render function
                         eventClick={this.handleEventClick}
@@ -217,17 +242,27 @@ function renderEventContent(eventInfo) {
         console.log(this.state.selectedEnd);
 
         // Send an HTTP request to the server.
-        let userPushToken = (this.state.selectedMember.pushToken) ? this.state.selectedMember.pushToken : "null";
-        let userID = this.state.selectedMember.id;
         let url = `${this.state.serverUrl}addshift`
+        const reqMembers = this.state.selectedMembers.map(obj => {
+            return {
+                id: obj.member.id,
+                role: obj.role,
+                start: obj.start,
+                end: obj.end,
+                token: obj.member.pushToken ? obj.member.pushToken : null
+            }
+        });
         let dat = JSON.stringify({
-            userid: userID,
-            role: this.state.selectedRole,
             start: this.state.selectedStart,
             end: this.state.selectedEnd,
-            token: userPushToken
+            members: reqMembers
         });
-        fetch(url, { 
+        console.log({
+            start: this.state.selectedStart,
+            end: this.state.selectedEnd,
+            members: reqMembers
+        })
+        authFetch(url, { 
                 method: 'POST',
                 body: dat,
                 headers: {
@@ -282,9 +317,29 @@ function renderEventContent(eventInfo) {
 
 
     onSelect(selectedList, selectedItem) {
-        this.setState({
-			selectedMember: selectedItem
-        });   
+        this.setState(prevState => {
+            const newMembers = prevState.selectedMembers;
+            newMembers.push({
+                member: selectedItem,
+                role: "",
+                start: this.state.selectedStart,
+                end: this.state.selectedEnd
+            });
+            return newMembers;
+        });
+    }
+
+    onRemove(selectedList, selectedItem) {
+        this.setState(prevState => {
+            const newMembers = prevState.selectedMembers;
+            for (let i=0; i<newMembers.length; i++) {
+                if (newMembers[i].member == selectedItem) {
+                    newMembers.splice(i, 1);
+                }
+            }
+
+            return newMembers;
+        })
     }
 
     handleDateSelect = (selectInfo) => {
@@ -324,7 +379,7 @@ function renderEventContent(eventInfo) {
       return (
         <>
           <b>{eventInfo.timeText}</b>
-          <i>{eventInfo.event.title}</i>
+          <i>({eventInfo.event.title})</i>
         </>
       )
     }
@@ -359,7 +414,7 @@ function renderEventContent(eventInfo) {
             body: formData,
         }
 
-        fetch(`${this.state.serverUrl}import`, options)
+        authFetch(`${this.state.serverUrl}import`, options)
         .then(res => {
             if (res.status === 200) this.openSuccessAlert();
             else this.openErrorAlert();
@@ -370,21 +425,43 @@ function renderEventContent(eventInfo) {
         });	// Print the error if there is one.
     }
 
-    handleRoleChange(e) {
-		this.setState({
-			selectedRole: e.target.value
+    handleRoleChange(role, i) {
+		this.setState(prevState => {
+            const newMembers = prevState.selectedMembers;
+            newMembers[i].role = role;
+            return newMembers;
         });
     }
     
     handleStartChange(e) {
-		this.setState({
-			selectedStart: e.target.value
+        const v = e.target.value;
+
+		this.setState(prevState => {
+            const newMembers = prevState.selectedMembers;
+            for (let i=0; i<newMembers.length; i++) {
+                newMembers[i].start = v
+            };
+
+            return {
+                selectedStart: v,
+                selectedMembers: newMembers
+            };
         });
     }
     
     handleEndChange(e) {
-		this.setState({
-			selectedEnd: e.target.value
+        const v = e.target.value
+
+		this.setState(prevState => {
+            const newMembers = prevState.selectedMembers;
+            for (let i=0; i<newMembers.length; i++) {
+                newMembers[i].end = v;
+            };
+
+            return {
+                selectedEnd: v,
+                selectedMembers: newMembers
+            };
         });
     }
     
@@ -435,6 +512,31 @@ function renderEventContent(eventInfo) {
     };
 
     renderSidebar() {
+        const memberMenu = this.state.selectedMembers.map((obj, i) => {
+            const availableRoles = ['Probationary EMT', 'EMT', 'Lead', 'Crew Chief'];
+            if (obj.member.rank != 'Crew Chief') {
+                const j = availableRoles.indexOf(obj.member.rank);
+                availableRoles.splice(j + 1);
+            };
+
+            const availableOptions = availableRoles.map(role => {
+                return <option value={role} key={`${obj.member.id}.${role}`}>{role}</option>;
+            });
+
+
+            return <div key={obj.member.id}>
+                <div>{obj.member.fullName}</div>
+                <label>Role: </label>
+                <select value={this.state.selectedMembers[i].role} onChange={(e) => {
+                    this.handleRoleChange(e.target.value, i)
+                }}>
+                    <option value>--Select Role--</option>
+                    {availableOptions}
+                </select>
+                <hr/>
+            </div>
+        });
+
         return (
           <div className='demo-app-sidebar'>
             <div className='demo-app-sidebar-section'>
@@ -445,7 +547,7 @@ function renderEventContent(eventInfo) {
                     displayValue="fullName" // Property name to display in the dropdown options
                     ref={this.multiselectRef}
                     closeOnSelect={false}
-                    selectionLimit={1}
+                    selectionLimit={4}
                     disable={this.state.allSelected}
                     showCheckbox={true}
                 />
@@ -453,14 +555,9 @@ function renderEventContent(eventInfo) {
                 <div>
                     <br/>
                 </div>
-
-                Role
-                <form >
-                    <input type="text" value={this.state.selectedRole} onChange={this.handleRoleChange} />
-                </form>
-
+                <div>{this.state.selectedMembers.length} / 4 members selected for this shift</div>
+                {memberMenu}
                 <div>
-                    <br/>
                     <br/>
                 </div>
 
@@ -470,6 +567,7 @@ function renderEventContent(eventInfo) {
                         label="Shift Start"
                         type="datetime-local"
                         onChange={this.handleStartChange}
+                        value={this.state.selectedStart}
                         // defaultValue="2017-05-24T10:30"
                         // className={classes.textField}
                         InputLabelProps={{
@@ -489,6 +587,7 @@ function renderEventContent(eventInfo) {
                         label="Shift End"
                         type="datetime-local"
                         onChange={this.handleEndChange}
+                        value={this.state.selectedEnd}
                         // defaultValue="2017-05-24T10:30"
                         // className={classes.textField}
                         InputLabelProps={{
