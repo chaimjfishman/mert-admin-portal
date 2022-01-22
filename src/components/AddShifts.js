@@ -114,7 +114,6 @@ function renderEventContent(eventInfo) {
                 const eventsList = shiftsList.map(shift => {
                     let maxNum = 3;
                     let numLeads = 0;
-                    console.log(shift.members)
                     for (let i=0; i<shift.members.length; i++) {
                         if (shift.members[i].role == 'Crew Chief') {
                             maxNum = 4;
@@ -157,6 +156,8 @@ function renderEventContent(eventInfo) {
                         eventContent={this.renderEventContent} // custom render function
                         eventClick={this.handleEventClick}
                         eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+                        nextDayThreshold={'06:00:00'}
+                        allDaySlot={false}
                         // eventAdd={this.getAllShifts}
                         /* you can update a remote database when these fire:
                         
@@ -361,12 +362,35 @@ function renderEventContent(eventInfo) {
       }
     
       handleEventClick(clickInfo) {
-        // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-        //   clickInfo.event.remove()
-        // }
-        console.log(clickInfo.event)
-        // clickInfo.event.remove()
-      }
+        const id = clickInfo.event._def.publicId;
+        let shift = null;
+        let selectedMembers = [];
+
+        for (let i=0; i<this.state.jsonFeed.length; i++) {
+            if (id == this.state.jsonFeed[i].id) {
+                shift = this.state.jsonFeed[i];
+                break
+            };
+        };
+
+        for (let i=0; i<shift.members.length; i++) {
+            for (let k=0; k<this.state.options.length; k++) {
+                if (shift.members[i].id == this.state.options[k].id) {
+                    selectedMembers.push({
+                        member: this.state.options[k],
+                        role: shift.members[i].role,
+                        start: shift.members[i].start,
+                        end: shift.members[i].end
+                    })
+                };
+            };
+        };
+        this.setState({
+            selectedMembers,
+            selectedStart: shift.start.slice(0, 16),
+            selectedEnd: shift.end.slice(0, 16)
+        });
+      };
     
       handleEvents(events) {
         this.setState({
@@ -435,6 +459,7 @@ function renderEventContent(eventInfo) {
     
     handleStartChange(e) {
         const v = e.target.value;
+        console.log(v)
 
 		this.setState(prevState => {
             const newMembers = prevState.selectedMembers;
